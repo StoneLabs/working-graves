@@ -28,24 +28,12 @@ public class WorkingGraves implements DedicatedServerModInitializer
     public static final String MOD_NAME = "Working Graves";
     public static final String VERSION = "1.0.0";
 
-
-    public static class PlayerBlockBreakEvent implements PlayerBlockBreakEvents.After
-    {
-        @Override
-        public void afterBlockBreak(World world, PlayerEntity player, BlockPos pos, BlockState state, BlockEntity blockEntity)
-        {
-
-        }
-    }
-
     public static class PlayerUseBlockEvent implements UseBlockCallback
     {
         @Override
         public ActionResult interact(PlayerEntity player, World world, Hand hand, BlockHitResult hitResult)
         {
             ServerWorld serverWorld = (ServerWorld) world;
-
-
 
             BlockEntity blockEntity = world.getBlockEntity(hitResult.getBlockPos());
             if (blockEntity instanceof SignBlockEntity)
@@ -61,7 +49,6 @@ public class WorkingGraves implements DedicatedServerModInitializer
         LOGGER.log(Level.INFO, "Initialized {} version {}", MOD_NAME, VERSION);
 
         CommandRegistrationCallback.EVENT.register((dispatcher, dedicated) -> GravesCommand.register(dispatcher));
-        PlayerBlockBreakEvents.AFTER.register(new PlayerBlockBreakEvent());
         UseBlockCallback.EVENT.register(new PlayerUseBlockEvent());
     }
 }
