@@ -7,7 +7,6 @@ import net.minecraft.command.argument.EntityArgumentType;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.LiteralText;
-import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
 import net.stone_labs.workinggraves.Grave;
 import net.stone_labs.workinggraves.GraveHandler;

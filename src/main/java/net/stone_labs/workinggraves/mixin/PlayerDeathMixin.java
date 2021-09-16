@@ -1,7 +1,6 @@
 package net.stone_labs.workinggraves.mixin;
 
 import net.minecraft.entity.damage.DamageSource;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.stone_labs.workinggraves.GraveHandler;
 import org.spongepowered.asm.mixin.Mixin;

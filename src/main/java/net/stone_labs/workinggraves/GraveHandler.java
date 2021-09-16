@@ -2,22 +2,10 @@ package net.stone_labs.workinggraves;
 
 import net.minecraft.block.AbstractSignBlock;
 import net.minecraft.block.entity.SignBlockEntity;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.LightningEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.Item;
 import net.minecraft.item.Items;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.sound.SoundCategory;
-import net.minecraft.sound.SoundEvents;
-import net.minecraft.text.LiteralText;
-import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.village.raid.RaidManager;
-
 public class GraveHandler
 {
     public static boolean IsValid(AbstractSignBlock sign)
