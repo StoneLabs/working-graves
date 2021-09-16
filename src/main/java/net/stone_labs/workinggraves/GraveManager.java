@@ -36,9 +36,13 @@ public class GraveManager extends PersistentState
         if (graves.stream().anyMatch(grave -> grave.position().equals(pos)))
             return;
 
-        graves.add(new Grave(world, pos));
+        Grave grave = new Grave(world, pos);
+        grave.makeValid();
+
+        graves.add(grave);
         this.setDirty(true);
     }
+
     public void removeGrave(BlockPos pos)
     {
         if (graves.removeIf(grave -> grave.position().equals(pos)))
@@ -55,16 +59,31 @@ public class GraveManager extends PersistentState
         return world;
     }
 
-
-    public Grave findGrave(ServerPlayerEntity player)
+    public BlockPos gravePlayer(ServerPlayerEntity player)
     {
-        return findGrave(player, false);
+        if (player.getServerWorld() != world)
+        {
+            WorkingGraves.LOGGER.warn("Attempting to grave player in incorrect dimension.");
+            return null;
+        }
+
+        Grave grave = findGrave(player.getBlockPos());
+        if (grave == null)
+        {
+            WorkingGraves.LOGGER.info("No grave found for player %s".formatted(player.getEntityName()));
+            return null;
+        }
+
+        grave.gravePlayer(player);
+        removeGrave(grave.position());
+        return grave.position();
     }
-    public Grave findGrave(ServerPlayerEntity player, boolean ignoreValidity)
+
+    public Grave findGrave(BlockPos pos)
     {
         Grave[] closestGraves = graves.stream().sorted((o1, o2) -> {
-            double o1Dist = o1.position().getSquaredDistance(player.getBlockPos());
-            double o2Dist = o2.position().getSquaredDistance(player.getBlockPos());
+            double o1Dist = o1.position().getSquaredDistance(pos);
+            double o2Dist = o2.position().getSquaredDistance(pos);
             return Double.compare(o1Dist, o2Dist);
         }).toArray(Grave[]::new);
 
