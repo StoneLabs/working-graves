@@ -8,13 +8,15 @@ import net.minecraft.util.math.BlockPos;
 
 public record Grave(ServerWorld world, BlockPos position)
 {
+    public static String KEY = "hic portus animae";
+
     public boolean isValid()
     {
         BlockEntity blockEntity = world.getBlockEntity(position);
         if (!(blockEntity instanceof SignBlockEntity sign))
             return false;
 
-        if (!sign.getTextOnRow(0, false).asString().trim().equalsIgnoreCase("empty grave"))
+        if (!isGraveSign(sign))
             return false;
 
         //noinspection RedundantIfStatement
@@ -22,5 +24,10 @@ public record Grave(ServerWorld world, BlockPos position)
             return false;
 
         return true;
+    }
+
+    public static boolean isGraveSign(SignBlockEntity sign)
+    {
+        return sign.getTextOnRow(0, false).asString().trim().equalsIgnoreCase(KEY);
     }
 }
