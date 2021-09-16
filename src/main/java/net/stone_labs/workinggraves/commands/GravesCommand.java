@@ -39,6 +39,8 @@ public class GravesCommand
                 .requires((source) -> source.hasPermissionLevel(2))
                 .then(literal("list")
                             .executes((context) -> list(context.getSource())))
+                .then(literal("check")
+                        .executes((context) -> check(context.getSource())))
 
         );
     }
@@ -51,6 +53,22 @@ public class GravesCommand
         builder.append("Listing graves in %s:".formatted(manager.getWorld().getRegistryKey().getValue().toString()));
         for (Grave grave : manager.getGraves())
             builder.append("\n - (%d, %d, %d)".formatted(grave.position().getX(), grave.position().getY(), grave.position().getZ()));
+
+        source.sendFeedback(new LiteralText(builder.toString()), false);
+        return 0;
+    }
+
+    private static int check(ServerCommandSource source) throws CommandSyntaxException
+    {
+        GraveManager manager =  GraveHandler.getManager(source.getWorld());
+        StringBuilder builder = new StringBuilder();
+
+        builder.append("Verifying grave validity in %s:".formatted(manager.getWorld().getRegistryKey().getValue().toString()));
+        for (Grave grave : manager.getGraves())
+        {
+            String state = grave.isValid() ? "§2VALID§r" : "§4VALID§r";
+            builder.append("\n - (%d, %d, %d): %s".formatted(grave.position().getX(), grave.position().getY(), grave.position().getZ(), state));
+        }
 
         source.sendFeedback(new LiteralText(builder.toString()), false);
         return 0;
