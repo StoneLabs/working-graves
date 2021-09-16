@@ -42,29 +42,10 @@ public class GraveHandler
         if (!Grave.isGraveSign(sign))
             return;
 
-        // Underline if required
-        if (!sign.getTextOnRow(0, false).getStyle().isUnderlined())
-        {
-            sign.setTextOnRow(0, new LiteralText(Grave.KEY).formatted(Formatting.UNDERLINE));
-            player.server.getPlayerManager().sendToAll(sign.toUpdatePacket());
-        }
-
         // Register grave if not registered
         GraveManager manager = getManager(world);
         manager.addGrave(sign.getPos());
 
         world.spawnParticles(ParticleTypes.GLOW, sign.getPos().getX(), sign.getPos().getY(), sign.getPos().getZ(), 5, 1, 1, 1, 0.1);
-    }
-
-    public static void GravePlayerAtSign(ServerPlayerEntity player, ServerWorld world, SignBlockEntity sign)
-    {
-        // On death
-        world.spawnParticles(ParticleTypes.SOUL_FIRE_FLAME, sign.getPos().getX(), sign.getPos().getY(), sign.getPos().getZ(), 500, 5, 3, 5, 0.001);
-        for (int i = 0; i < 5; i++)
-        {
-            LightningEntity entitybolt = new LightningEntity(EntityType.LIGHTNING_BOLT, world);
-            entitybolt.setPos(sign.getPos().getX(), sign.getPos().getY(), sign.getPos().getZ());
-            world.spawnEntity(entitybolt);
-        }
     }
 }

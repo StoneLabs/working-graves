@@ -19,6 +19,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
+import net.minecraft.util.math.BlockPos;
 import net.stone_labs.workinggraves.Grave;
 import net.stone_labs.workinggraves.GraveHandler;
 import net.stone_labs.workinggraves.GraveManager;
@@ -44,6 +45,9 @@ public class GravesCommand
                         .executes((context) -> check(context.getSource())))
                 .then(literal("find")
                         .executes((context) -> find(context.getSource())))
+                .then(literal("grave")
+                        .then(argument("targets", EntityArgumentType.players())
+                                .executes((context) -> grave(context.getSource(), getPlayers(context, "targets")))))
 
         );
     }
@@ -80,7 +84,7 @@ public class GravesCommand
     private static int find(ServerCommandSource source) throws CommandSyntaxException
     {
         GraveManager manager = GraveHandler.getManager(source.getWorld());
-        Grave grave = manager.findGrave(source.getPlayer());
+        Grave grave = manager.findGrave(source.getPlayer().getBlockPos());
 
         if (grave == null)
         {
@@ -90,7 +94,25 @@ public class GravesCommand
 
         source.sendFeedback(
                 Text.Serializer.fromJson("[\"\",\"Next grave at \",{\"text\":\"[%s]\",\"underlined\":true,\"color\":\"aqua\",\"clickEvent\":{\"action\":\"run_command\",\"value\":\"/tp %d %d %d\"}}]"
-                .formatted(grave.position().toShortString(), grave.position().getX(), grave.position().getY(), grave.position().getZ())), false);
+                        .formatted(grave.position().toShortString(), grave.position().getX(), grave.position().getY(), grave.position().getZ())), false);
+        return 0;
+    }
+
+    private static int grave(ServerCommandSource source, Collection<ServerPlayerEntity> targets) throws CommandSyntaxException
+    {
+        source.sendFeedback(new LiteralText("Graving %d players:".formatted(targets.size())), false);
+        for (ServerPlayerEntity player : targets)
+        {
+            GraveManager manager = GraveHandler.getManager(player.getServerWorld());
+            BlockPos pos = manager.gravePlayer(player);
+
+            if (pos == null)
+                source.sendFeedback(new LiteralText(" §4%s: no grave found.§r"), false);
+            else
+                source.sendFeedback(
+                        Text.Serializer.fromJson("[\"- %s: \", {\"text\":\"[%d %d %d]\",\"underlined\":true,\"color\":\"aqua\",\"clickEvent\":{\"action\":\"run_command\",\"value\":\"/tp %2$d %3$d %4$d\"}}]"
+                                .formatted(player.getEntityName(), pos.getX(), pos.getY(), pos.getZ())), false);
+        }
         return 0;
     }
 }
