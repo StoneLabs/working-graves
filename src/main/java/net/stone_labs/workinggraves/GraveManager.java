@@ -41,7 +41,8 @@ public class GraveManager extends PersistentState
     }
     public void removeGrave(BlockPos pos)
     {
-        graves.removeIf(grave -> grave.position().equals(pos));
+        if (graves.removeIf(grave -> grave.position().equals(pos)))
+            this.setDirty(true);
     }
 
     public List<Grave> getGraves()
