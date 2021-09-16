@@ -1,6 +1,27 @@
+<img alt="GitHub Workflow Status (branch)" src="https://img.shields.io/github/workflow/status/StoneLabs/working-graves/build/master?label=master&style=flat-square"> <img alt="GitHub issues" src="https://img.shields.io/github/issues/StoneLabs/working-graves?style=flat-square"> <img alt="Version" src="https://img.shields.io/badge/Minecraft%20Version-1.17.1-blue?style=flat-square"> <img alt="GitHub Repo stars" src="https://img.shields.io/github/stars/StoneLabs/working-graves?style=flat-square">
+
+<img src="https://user-images.githubusercontent.com/19885942/133668909-406ae7e7-3012-4444-b2c4-392c94d51837.png" align="right" width="250" />
+
 # Working Graves
 
-TODO
+Yet another graves mod, I know. Working graves is a fabric mod that allows for the construction of graves that will be populated on player death. That means you can build a graveyard that will fill up as time goes on. Pretty cool huh?
+
+Working graves is a dedicated server mod. __No client version is available__.
+
+## How to use
+
+Follow these steps for success.
+1. Place a sign with the text `hic portus animae`.
+2. Right click the sign with a soul torch to underline it.
+3. Place a barrel/chest under the sign (a 3x3x3 cube under the sign is checked) [optional]
+4. ???
+5. Die.
+
+You can now go to the grave to collect your items.
+
+## Download
+
+[See the release page.](https://github.com/StoneLabs/working-graves/releases)
 
 ## License
 
