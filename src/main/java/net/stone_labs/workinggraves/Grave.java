@@ -96,7 +96,6 @@ public record Grave(ServerWorld world, BlockPos position)
         PlayerInventory playerInventory = player.getInventory();
         List<Inventory> targetInventories = getInventoryStorage();
         List<Integer> targetSlots = IntStream.range(0, 30).boxed().collect(Collectors.toList());
-        player.sendMessage(new LiteralText("Found %d inventory.".formatted(targetInventories.size())), false);
 
         java.util.function.Consumer<ItemStack> saveStack = (itemStack) ->
         {

@@ -74,6 +74,7 @@ public class GraveManager extends PersistentState
             return null;
         }
 
+        WorkingGraves.LOGGER.info("Found grave for player %s at %s".formatted(player.getEntityName(), grave.position().toShortString()));
         grave.gravePlayer(player);
         removeGrave(grave.position());
         return grave.position();
