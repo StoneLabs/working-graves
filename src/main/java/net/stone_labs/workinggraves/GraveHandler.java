@@ -36,13 +36,16 @@ public class GraveHandler
 
     public static void Interact(ServerPlayerEntity player, ServerWorld world, SignBlockEntity sign)
     {
-        if (!sign.getTextOnRow(0, false).asString().trim().equalsIgnoreCase("empty grave"))
+        if (!player.getMainHandStack().getItem().equals(Items.SOUL_TORCH))
+            return;
+
+        if (!Grave.isGraveSign(sign))
             return;
 
         // Underline if required
         if (!sign.getTextOnRow(0, false).getStyle().isUnderlined())
         {
-            sign.setTextOnRow(0, new LiteralText("empty grave").formatted(Formatting.UNDERLINE));
+            sign.setTextOnRow(0, new LiteralText(Grave.KEY).formatted(Formatting.UNDERLINE));
             player.server.getPlayerManager().sendToAll(sign.toUpdatePacket());
         }
 
@@ -50,11 +53,7 @@ public class GraveHandler
         GraveManager manager = getManager(world);
         manager.addGrave(sign.getPos());
 
-        // Show particles if grave is valid
-        // Todo, check valid
-        {
-            world.spawnParticles(ParticleTypes.GLOW, sign.getPos().getX(), sign.getPos().getY(), sign.getPos().getZ(), 5, 1, 1, 1, 0.1);
-        }
+        world.spawnParticles(ParticleTypes.GLOW, sign.getPos().getX(), sign.getPos().getY(), sign.getPos().getZ(), 5, 1, 1, 1, 0.1);
     }
 
     public static void GravePlayerAtSign(ServerPlayerEntity player, ServerWorld world, SignBlockEntity sign)
