@@ -1,17 +1,11 @@
 package net.stone_labs.workinggraves;
 
-import net.minecraft.block.AbstractSignBlock;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.SignBlock;
-import net.minecraft.block.WallSignBlock;
-import net.minecraft.block.entity.BarrelBlockEntity;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.LootableContainerBlockEntity;
 import net.minecraft.block.entity.SignBlockEntity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LightningEntity;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
