@@ -3,16 +3,12 @@ package net.stone_labs.workinggraves;
 import net.fabricmc.api.DedicatedServerModInitializer;
 import net.fabricmc.fabric.api.event.player.PlayerBlockBreakEvents;
 import net.fabricmc.fabric.api.event.player.UseBlockCallback;
-import net.minecraft.block.AbstractSignBlock;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
-import net.minecraft.block.SignBlock;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.SignBlockEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.text.LiteralText;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
@@ -45,9 +41,13 @@ public class WorkingGraves implements DedicatedServerModInitializer
         @Override
         public ActionResult interact(PlayerEntity player, World world, Hand hand, BlockHitResult hitResult)
         {
+            ServerWorld serverWorld = (ServerWorld) world;
+
+
+
             BlockEntity blockEntity = world.getBlockEntity(hitResult.getBlockPos());
             if (blockEntity instanceof SignBlockEntity)
-                GraveManager.Interact((ServerPlayerEntity) player, (ServerWorld) world, (SignBlockEntity) blockEntity);
+                GraveHandler.Interact((ServerPlayerEntity) player, (ServerWorld) world, (SignBlockEntity) blockEntity);
 
             return ActionResult.PASS;
         }
