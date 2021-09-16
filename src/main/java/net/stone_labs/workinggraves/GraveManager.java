@@ -1,50 +1,67 @@
 package net.stone_labs.workinggraves;
 
-import net.minecraft.block.AbstractSignBlock;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import net.minecraft.block.entity.SignBlockEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.Item;
-import net.minecraft.item.Items;
-import net.minecraft.particle.ParticleTypes;
-import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtIntArray;
+import net.minecraft.nbt.NbtList;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.LiteralText;
-import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3i;
+import net.minecraft.village.raid.RaidManager;
+import net.minecraft.world.PersistentState;
+import net.minecraft.world.dimension.DimensionType;
 
-public class GraveManager
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
+
+public class GraveManager extends PersistentState
 {
-    public static boolean IsValid(AbstractSignBlock sign)
+    ServerWorld world;
+    List<Grave> graves;
+
+    public GraveManager(ServerWorld world)
     {
-        return true; //todo, return valid grave or not
+        this.world = world;
+        graves = new ArrayList<>();
     }
 
-    public static void Interact(ServerPlayerEntity player, ServerWorld world, SignBlockEntity sign)
+    public static String nameFor(DimensionType dimension)
     {
-        if (!sign.getTextOnRow(0, false).asString().trim().equalsIgnoreCase("empty grave"))
+        // In analogy to RaidManager.nameFor(...)
+        return "graves" + dimension.getSuffix();
+    }
+
+    public void addGrave(BlockPos pos)
+    {
+        if (graves.stream().anyMatch(grave -> grave.position().equals(pos)))
             return;
 
-        if (!player.isSneaking())
-            return;
+        graves.add(new Grave(pos));
+        this.setDirty(true);
+    }
 
-        // Underline if required
-        if (!sign.getTextOnRow(0, false).getStyle().isUnderlined())
-        {
-            sign.setTextOnRow(0, new LiteralText("empty grave").formatted(Formatting.UNDERLINE));
-            player.server.getPlayerManager().sendToAll(sign.toUpdatePacket());
-        }
+    public static GraveManager fromNbt(ServerWorld serverWorld, NbtCompound nbt)
+    {
+        GraveManager manager = new GraveManager(serverWorld);
+        manager.world.getPlayers().forEach(serverPlayerEntity -> serverPlayerEntity.sendMessage(new LiteralText(nbt.asString()), false));
 
-        // Register grave if not registered
-        // Todo, check not registered here
-        {
-            // Todo, register
-        }
+        return manager;
+    }
 
-        // Show particles if grave is valid
-        // Todo, check valid
-        {
-            world.spawnParticles(ParticleTypes.GLOW, sign.getPos().getX(), sign.getPos().getY(), sign.getPos().getZ(), 5, 1, 1, 1, 0.1);
-        }
+    @Override
+    public NbtCompound writeNbt(NbtCompound nbt)
+    {
+        NbtList NbtGraves = new NbtList();
+        for (Grave grave : graves)
+           NbtGraves.add(new NbtIntArray(new int[] {grave.position().getX(), grave.position().getY(), grave.position().getZ()}));
+
+        nbt.put("graves", NbtGraves);
+        return nbt;
     }
 }
