@@ -6,6 +6,7 @@
   ],
   "client": [],
   "server": [
+    "PlayerDeathMixin"
   ],
   "injectors": {
     "defaultRequire": 1
