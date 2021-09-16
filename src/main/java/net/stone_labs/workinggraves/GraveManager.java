@@ -4,6 +4,7 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtIntArray;
 import net.minecraft.nbt.NbtList;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.LiteralText;
 import net.minecraft.util.math.BlockPos;
@@ -38,6 +39,10 @@ public class GraveManager extends PersistentState
         graves.add(new Grave(world, pos));
         this.setDirty(true);
     }
+    public void removeGrave(BlockPos pos)
+    {
+        graves.removeIf(grave -> grave.position().equals(pos));
+    }
 
     public List<Grave> getGraves()
     {
@@ -47,6 +52,29 @@ public class GraveManager extends PersistentState
     public ServerWorld getWorld()
     {
         return world;
+    }
+
+
+    public Grave findGrave(ServerPlayerEntity player)
+    {
+        return findGrave(player, false);
+    }
+    public Grave findGrave(ServerPlayerEntity player, boolean ignoreValidity)
+    {
+        Grave[] closestGraves = graves.stream().sorted((o1, o2) -> {
+            double o1Dist = o1.position().getSquaredDistance(player.getBlockPos());
+            double o2Dist = o2.position().getSquaredDistance(player.getBlockPos());
+            return Double.compare(o1Dist, o2Dist);
+        }).toArray(Grave[]::new);
+
+        for (Grave grave : closestGraves)
+        {
+            if (grave.isValid())
+                return grave;
+            else
+                removeGrave(grave.position());
+        }
+        return null;
     }
 
     public static GraveManager fromNbt(ServerWorld serverWorld, NbtCompound nbt)
