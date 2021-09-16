@@ -1,0 +1,35 @@
+{
+  "schemaVersion": 1,
+  "id": "workinggraves",
+  "version": "${version}",
+  "name": "Working Graves",
+  "description": "Its working graves. Who would have guessed...",
+  "license": "UNLICENSE",
+  "authors": [
+    "StoneLabs <levyehrstein@googlemail.com>"
+  ],
+  "contact": {
+    "homepage": "https://fabricmc.net/",
+    "sources": "https://github.com/"
+  },
+  "icon": "assets/workinggraves/icon.png",
+  "environment": "*",
+  "entrypoints": {
+    "main": [],
+    "client": [
+      "net.stone_labs.workinggraves.ClientWarning"
+    ],
+    "server": [
+      "net.stone_labs.workinggraves.WorkingGraves"
+    ]
+  },
+  "mixins": [
+    "workinggraves.mixins.json"
+  ],
+  "depends": {
+    "minecraft": ">=1.17",
+    "fabricloader": ">=0.11.3",
+    "fabric": "*",
+    "java": ">=16"
+  }
+}
