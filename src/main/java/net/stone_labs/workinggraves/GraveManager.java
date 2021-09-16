@@ -35,7 +35,7 @@ public class GraveManager extends PersistentState
         if (graves.stream().anyMatch(grave -> grave.position().equals(pos)))
             return;
 
-        graves.add(new Grave(pos));
+        graves.add(new Grave(world, pos));
         this.setDirty(true);
     }
 
