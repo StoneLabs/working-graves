@@ -1,6 +1,7 @@
 package net.stone_labs.workinggraves;
 
 import net.fabricmc.api.DedicatedServerModInitializer;
+import net.fabricmc.fabric.api.command.v1.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.event.player.PlayerBlockBreakEvents;
 import net.fabricmc.fabric.api.event.player.UseBlockCallback;
 import net.minecraft.block.BlockState;
@@ -14,6 +15,7 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.stone_labs.workinggraves.commands.GravesCommand;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -58,6 +60,7 @@ public class WorkingGraves implements DedicatedServerModInitializer
     {
         LOGGER.log(Level.INFO, "Initialized {} version {}", MOD_NAME, VERSION);
 
+        CommandRegistrationCallback.EVENT.register((dispatcher, dedicated) -> GravesCommand.register(dispatcher));
         PlayerBlockBreakEvents.AFTER.register(new PlayerBlockBreakEvent());
         UseBlockCallback.EVENT.register(new PlayerUseBlockEvent());
     }

@@ -1,22 +1,14 @@
 package net.stone_labs.workinggraves;
 
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
-import net.minecraft.block.entity.SignBlockEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtIntArray;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.LiteralText;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3i;
-import net.minecraft.village.raid.RaidManager;
 import net.minecraft.world.PersistentState;
 import net.minecraft.world.dimension.DimensionType;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -44,6 +36,16 @@ public class GraveManager extends PersistentState
 
         graves.add(new Grave(pos));
         this.setDirty(true);
+    }
+
+    public List<Grave> getGraves()
+    {
+        return graves;
+    }
+
+    public ServerWorld getWorld()
+    {
+        return world;
     }
 
     public static GraveManager fromNbt(ServerWorld serverWorld, NbtCompound nbt)
