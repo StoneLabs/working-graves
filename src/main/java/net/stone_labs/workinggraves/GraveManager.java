@@ -1,6 +1,7 @@
 package net.stone_labs.workinggraves;
 
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtIntArray;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.server.world.ServerWorld;
@@ -51,7 +52,12 @@ public class GraveManager extends PersistentState
     public static GraveManager fromNbt(ServerWorld serverWorld, NbtCompound nbt)
     {
         GraveManager manager = new GraveManager(serverWorld);
-        manager.world.getPlayers().forEach(serverPlayerEntity -> serverPlayerEntity.sendMessage(new LiteralText(nbt.asString()), false));
+        NbtList graveList = nbt.getList("graves", NbtElement.INT_ARRAY_TYPE);
+        for (NbtElement graveEntry : graveList)
+        {
+            NbtIntArray gravePosition = (NbtIntArray) graveEntry;
+            manager.addGrave(new BlockPos(gravePosition.get(0).intValue(), gravePosition.get(1).intValue(), gravePosition.get(2).intValue()));
+        }
 
         return manager;
     }
