@@ -1,5 +1,6 @@
 package net.stone_labs.workinggraves;
 
+import net.minecraft.block.LightningRodBlock;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.LootableContainerBlockEntity;
 import net.minecraft.block.entity.SignBlockEntity;
@@ -134,9 +135,12 @@ public record Grave(ServerWorld world, BlockPos position)
         world.spawnParticles(ParticleTypes.SOUL_FIRE_FLAME, sign.getPos().getX(), sign.getPos().getY(), sign.getPos().getZ(), 500, 5, 3, 5, 0.001);
         for (int i = 0; i < 5; i++)
         {
-            LightningEntity entitybolt = new LightningEntity(EntityType.LIGHTNING_BOLT, world);
-            entitybolt.setPos(sign.getPos().getX(), sign.getPos().getY(), sign.getPos().getZ());
-            world.spawnEntity(entitybolt);
+            LightningEntity lightningEntity = (LightningEntity)EntityType.LIGHTNING_BOLT.create(world);
+            Random random = world.getRandom();
+
+            //noinspection ConstantConditions
+            lightningEntity.refreshPositionAfterTeleport(sign.getPos().getX() + random.nextFloat(), sign.getPos().getY(), sign.getPos().getZ() + random.nextFloat());
+            world.spawnEntity(lightningEntity);
         }
     }
 }
