@@ -36,8 +36,6 @@ public class GraveManager extends PersistentState
             return;
 
         Grave grave = new Grave(world, pos);
-        grave.makeValid();
-
         graves.add(grave);
         this.setDirty(true);
     }

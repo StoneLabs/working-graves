@@ -30,9 +30,12 @@ public class GraveHandler
         if (!Grave.isGraveSign(sign))
             return;
 
-        // Register grave if not registered
+        Grave grave = new Grave(world, sign.getPos());
         GraveManager manager = getManager(world);
-        manager.addGrave(sign.getPos());
+
+        // Make grave valid and register
+        grave.makeValid();
+        manager.addGrave(grave.position());
 
         world.spawnParticles(ParticleTypes.GLOW, sign.getPos().getX(), sign.getPos().getY(), sign.getPos().getZ(), 5, 1, 1, 1, 0.1);
     }
