@@ -74,7 +74,7 @@ public class GravesCommand
         source.sendFeedback(GravesCommandFormatter.gravedListHeader(targets), false);
         for (ServerPlayerEntity player : targets)
         {
-            GraveManager manager = GraveHandler.getManager(player.getServerWorld());
+            GraveManager manager = GraveHandler.getManager(player.getWorld());
             BlockPos pos = manager.gravePlayer(player);
 
             source.sendFeedback(GravesCommandFormatter.gravedListEntry(player, pos), false);
