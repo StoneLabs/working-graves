@@ -8,11 +8,6 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 public class GraveHandler
 {
-    public static boolean IsValid(AbstractSignBlock sign)
-    {
-        return true; //todo, return valid grave or not
-    }
-
     public static GraveManager getManager(ServerWorld world)
     {
         return world.getPersistentStateManager().getOrCreate((nbtCompound) -> {

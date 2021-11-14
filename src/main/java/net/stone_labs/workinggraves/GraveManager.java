@@ -58,7 +58,7 @@ public class GraveManager extends PersistentState
 
     public BlockPos gravePlayer(ServerPlayerEntity player)
     {
-        if (player.getServerWorld() != world)
+        if (player.getWorld() != world)
         {
             WorkingGraves.LOGGER.warn("Attempting to grave player in incorrect dimension.");
             return null;
