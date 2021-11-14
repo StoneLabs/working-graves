@@ -78,6 +78,7 @@ public class GravesCommand
             BlockPos pos = manager.gravePlayer(player);
 
             source.sendFeedback(GravesCommandFormatter.gravedListEntry(player, pos), false);
+            player.sendMessage(GravesCommandFormatter.gravedDM(), false);
         }
         return 0;
     }
