@@ -3,6 +3,7 @@ package net.stone_labs.workinggraves.commands;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.math.BlockPos;
 import net.stone_labs.workinggraves.Grave;
 import net.stone_labs.workinggraves.GraveManager;
@@ -71,5 +72,10 @@ public class GravesCommandFormatter
     public static Text gravedListHeader(Collection<ServerPlayerEntity> targets)
     {
         return new LiteralText("Graved %d players:".formatted(targets.size()));
+    }
+
+    public static Text gravedDM()
+    {
+        return new LiteralText("Your death has been simulated by a server operator.").formatted(Formatting.RED);
     }
 }
