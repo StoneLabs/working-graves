@@ -12,11 +12,10 @@ public class GraveHandler
 
     public static GraveManager getManager(ServerWorld world)
     {
-        return world.getPersistentStateManager().getOrCreate((nbtCompound) -> {
-            return GraveManager.fromNbt(world, nbtCompound);
-        }, () -> {
-            return new GraveManager(world);
-        }, GraveManager.nameFor(world.getDimension()));
+        return world.getPersistentStateManager().getOrCreate(
+                nbt -> GraveManager.fromNbt(world, nbt),
+                () -> new GraveManager(world),
+                GraveManager.nameFor(world.method_40134()));
     }
 
     public static void Interact(ServerPlayerEntity player, ServerWorld world, SignBlockEntity sign)
