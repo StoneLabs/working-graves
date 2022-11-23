@@ -14,10 +14,9 @@ import net.minecraft.item.Items;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.text.Text;
+import net.minecraft.text.LiteralText;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.random.Random;
 
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -51,13 +50,13 @@ public record Grave(ServerWorld world, BlockPos position)
             return;
 
         // Underline if required
-        sign.setTextOnRow(0, Text.literal(Grave.KEY).formatted(Formatting.UNDERLINE));
+        sign.setTextOnRow(0, new LiteralText(Grave.KEY).formatted(Formatting.UNDERLINE));
         world.getServer().getPlayerManager().sendToAll(sign.toUpdatePacket());
     }
 
     public static boolean isGraveSign(SignBlockEntity sign)
     {
-        return sign.getTextOnRow(0, false).getString().trim().equalsIgnoreCase(KEY);
+        return sign.getTextOnRow(0, false).asString().trim().equalsIgnoreCase(KEY);
     }
 
     public List<Inventory> getInventoryStorage()
@@ -82,10 +81,10 @@ public record Grave(ServerWorld world, BlockPos position)
             return;
 
         // Change sign
-        sign.setTextOnRow(0, Text.literal(player.getEntityName()));
-        sign.setTextOnRow(1, Text.literal("Level %d".formatted(player.experienceLevel)));
-        sign.setTextOnRow(2, Text.literal(new SimpleDateFormat("yyyy MM dd").format(new Date())));
-        sign.setTextOnRow(3, Text.literal(new SimpleDateFormat("HH:mm:ss").format(new Date())));
+        sign.setTextOnRow(0, new LiteralText(player.getEntityName()));
+        sign.setTextOnRow(1, new LiteralText("Level %d".formatted(player.experienceLevel)));
+        sign.setTextOnRow(2, new LiteralText(new SimpleDateFormat("yyyy MM dd").format(new Date())));
+        sign.setTextOnRow(3, new LiteralText(new SimpleDateFormat("HH:mm:ss").format(new Date())));
         world.getServer().getPlayerManager().sendToAll(sign.toUpdatePacket());
 
         // Items

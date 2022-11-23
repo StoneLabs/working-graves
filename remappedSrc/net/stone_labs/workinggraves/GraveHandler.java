@@ -15,7 +15,7 @@ public class GraveHandler
         return world.getPersistentStateManager().getOrCreate(
                 nbt -> GraveManager.fromNbt(world, nbt),
                 () -> new GraveManager(world),
-                GraveManager.nameFor(world.getDimensionEntry()));
+                GraveManager.nameFor(world.method_40134()));
     }
 
     public static void Interact(ServerPlayerEntity player, ServerWorld world, SignBlockEntity sign)

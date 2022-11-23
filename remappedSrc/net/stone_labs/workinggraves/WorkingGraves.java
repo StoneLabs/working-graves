@@ -1,7 +1,7 @@
 package net.stone_labs.workinggraves;
 
 import net.fabricmc.api.DedicatedServerModInitializer;
-import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
+import net.fabricmc.fabric.api.command.v1.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.event.player.UseBlockCallback;
 import net.fabricmc.fabric.api.gamerule.v1.GameRuleFactory;
@@ -27,7 +27,7 @@ public class WorkingGraves implements DedicatedServerModInitializer
 
     public static final String MOD_ID = "workinggraves";
     public static final String MOD_NAME = "Working Graves";
-    public static final String VERSION = "1.3.0";
+    public static final String VERSION = "1.2.0";
 
     public static class PlayerUseBlockEvent implements UseBlockCallback
     {
@@ -50,7 +50,7 @@ public class WorkingGraves implements DedicatedServerModInitializer
         LOGGER.log(Level.INFO, "Initialized {} version {}", MOD_NAME, VERSION);
 
         // Register command
-        CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> GravesCommand.register(dispatcher));
+        CommandRegistrationCallback.EVENT.register((dispatcher, dedicated) -> GravesCommand.register(dispatcher));
 
         // Register Right click handler
         UseBlockCallback.EVENT.register(new PlayerUseBlockEvent());

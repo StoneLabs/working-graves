@@ -1,6 +1,7 @@
 package net.stone_labs.workinggraves.commands;
 
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.math.BlockPos;
@@ -56,13 +57,13 @@ public class GravesCommandFormatter
     public static Text graveDistance(Grave grave, BlockPos reference)
     {
         return Text.Serializer.fromJson("[\"\",\"Next grave \",{\"text\":\"[%s]\",\"underlined\":true,\"color\":\"aqua\",\"clickEvent\":{\"action\":\"run_command\",\"value\":\"/tp %d %d %d\"}}, \" at distance %.2f blocks\"]"
-                        .formatted(grave.position().toShortString(), grave.position().getX(), grave.position().getY(), grave.position().getZ(), Math.sqrt(grave.position().getSquaredDistance(reference))));
+                        .formatted(grave.position().toShortString(), grave.position().getX(), grave.position().getY(), grave.position().getZ(), grave.position().getSquaredDistance(reference)));
     }
 
     public static Text gravedListEntry(ServerPlayerEntity player, BlockPos pos)
     {
         if (pos == null)
-            return Text.literal("- %s: §4no grave available.§r".formatted(player.getEntityName()));
+            return new LiteralText("- %s: §4no grave available.§r".formatted(player.getEntityName()));
         else
             return Text.Serializer.fromJson("[\"- %s: \", {\"text\":\"[%d %d %d]\",\"underlined\":true,\"color\":\"aqua\",\"clickEvent\":{\"action\":\"run_command\",\"value\":\"/tp %2$d %3$d %4$d\"}}]"
                     .formatted(player.getEntityName(), pos.getX(), pos.getY(), pos.getZ()));
@@ -70,11 +71,11 @@ public class GravesCommandFormatter
 
     public static Text gravedListHeader(Collection<ServerPlayerEntity> targets)
     {
-        return Text.literal("Graved %d players:".formatted(targets.size()));
+        return new LiteralText("Graved %d players:".formatted(targets.size()));
     }
 
     public static Text gravedDM()
     {
-        return Text.literal("Your death has been simulated by a server operator.").formatted(Formatting.RED);
+        return new LiteralText("Your death has been simulated by a server operator.").formatted(Formatting.RED);
     }
 }

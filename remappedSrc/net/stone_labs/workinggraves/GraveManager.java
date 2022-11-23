@@ -10,7 +10,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.world.PersistentState;
 import net.minecraft.world.dimension.DimensionType;
-import net.minecraft.world.dimension.DimensionTypes;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,7 +26,7 @@ public class GraveManager extends PersistentState
     }
 
     public static String nameFor(RegistryEntry<DimensionType> dimensionTypeEntry) {
-        if (dimensionTypeEntry.matchesKey(DimensionTypes.THE_END)) {
+        if (dimensionTypeEntry.matchesKey(DimensionType.THE_END_REGISTRY_KEY)) {
             return "graves_end";
         }
         return "graves";
