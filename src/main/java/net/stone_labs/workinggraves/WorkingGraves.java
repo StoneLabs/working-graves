@@ -1,6 +1,6 @@
 package net.stone_labs.workinggraves;
 
-import net.fabricmc.api.DedicatedServerModInitializer;
+import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.event.player.UseBlockCallback;
@@ -21,7 +21,7 @@ import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class WorkingGraves implements DedicatedServerModInitializer
+public class WorkingGraves implements ModInitializer
 {
     public static final Logger LOGGER = LogManager.getLogger();
 
@@ -34,18 +34,18 @@ public class WorkingGraves implements DedicatedServerModInitializer
         @Override
         public ActionResult interact(PlayerEntity player, World world, Hand hand, BlockHitResult hitResult)
         {
-            ServerWorld serverWorld = (ServerWorld) world;
-
-            BlockEntity blockEntity = world.getBlockEntity(hitResult.getBlockPos());
-            if (blockEntity instanceof SignBlockEntity)
-                GraveHandler.Interact((ServerPlayerEntity) player, (ServerWorld) world, (SignBlockEntity) blockEntity);
-
+            if (world instanceof ServerWorld)
+            {
+                BlockEntity blockEntity = world.getBlockEntity(hitResult.getBlockPos());
+                if (blockEntity instanceof SignBlockEntity)
+                    GraveHandler.Interact((ServerPlayerEntity) player, (ServerWorld) world, (SignBlockEntity) blockEntity);
+            }
             return ActionResult.PASS;
         }
     }
 
     @Override
-    public void onInitializeServer()
+    public void onInitialize()
     {
         LOGGER.log(Level.INFO, "Initialized {} version {}", MOD_NAME, VERSION);
 

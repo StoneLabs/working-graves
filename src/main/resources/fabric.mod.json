@@ -15,13 +15,11 @@
   "icon": "assets/workinggraves/icon.png",
   "environment": "*",
   "entrypoints": {
-    "main": [],
-    "client": [
-      "net.stone_labs.workinggraves.ClientWarning"
-    ],
-    "server": [
+    "main": [
       "net.stone_labs.workinggraves.WorkingGraves"
-    ]
+    ],
+    "client": [],
+    "server": []
   },
   "mixins": [
     "workinggraves.mixins.json"
