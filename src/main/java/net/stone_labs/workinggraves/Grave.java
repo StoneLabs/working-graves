@@ -4,6 +4,7 @@ import net.minecraft.block.LightningRodBlock;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.LootableContainerBlockEntity;
 import net.minecraft.block.entity.SignBlockEntity;
+import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LightningEntity;
@@ -96,6 +97,9 @@ public record Grave(ServerWorld world, BlockPos position)
         java.util.function.Consumer<ItemStack> saveStack = (itemStack) ->
         {
             if (itemStack.getItem().equals(Items.AIR))
+                return;
+
+            if (EnchantmentHelper.hasVanishingCurse(itemStack))
                 return;
 
             Collections.shuffle(targetInventories);
