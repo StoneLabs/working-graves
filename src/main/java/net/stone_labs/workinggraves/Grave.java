@@ -19,6 +19,7 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.random.Random;
+import net.minecraft.world.GameRules;
 import net.stone_labs.workinggraves.compat.TrinketsCompat;
 
 import java.text.SimpleDateFormat;
@@ -91,55 +92,58 @@ public record Grave(ServerWorld world, BlockPos position)
         world.getServer().getPlayerManager().sendToAll(sign.toUpdatePacket());
 
         // Items
-        PlayerInventory playerInventory = player.getInventory();
-        List<Inventory> targetInventories = getInventoryStorage();
-        List<Integer> targetSlots = IntStream.range(0, 30).boxed().collect(Collectors.toList());
-
-        java.util.function.Consumer<ItemStack> saveStack = (itemStack) ->
+        if (!player.getWorld().getGameRules().getBoolean(GameRules.KEEP_INVENTORY))
         {
-            if (itemStack.getItem().equals(Items.AIR))
-                return;
+            PlayerInventory playerInventory = player.getInventory();
+            List<Inventory> targetInventories = getInventoryStorage();
+            List<Integer> targetSlots = IntStream.range(0, 30).boxed().collect(Collectors.toList());
 
-            if (EnchantmentHelper.hasVanishingCurse(itemStack))
-                return;
+            java.util.function.Consumer<ItemStack> saveStack = (itemStack) ->
+            {
+                if (itemStack.getItem().equals(Items.AIR))
+                    return;
 
-            Collections.shuffle(targetInventories);
-            Collections.shuffle(targetSlots);
-            for (Inventory inventory : targetInventories)
-                for (Integer slot : targetSlots)
-                    try
-                    {
-                        ItemStack targetSlot = inventory.getStack(slot);
-                        if (targetSlot.getItem().equals(Items.AIR))
+                if (EnchantmentHelper.hasVanishingCurse(itemStack))
+                    return;
+
+                Collections.shuffle(targetInventories);
+                Collections.shuffle(targetSlots);
+                for (Inventory inventory : targetInventories)
+                    for (Integer slot : targetSlots)
+                        try
                         {
-                            inventory.setStack(slot, itemStack);
-                            return;
+                            ItemStack targetSlot = inventory.getStack(slot);
+                            if (targetSlot.getItem().equals(Items.AIR))
+                            {
+                                inventory.setStack(slot, itemStack);
+                                return;
+                            }
                         }
-                    }
-                    catch (Exception ignored)
-                    {
-                    }
+                        catch (Exception ignored)
+                        {
+                        }
 
-            ItemEntity itemEntity = new ItemEntity(this.world, position.getX(), position.getY(), position.getZ(), itemStack);
-            itemEntity.setToDefaultPickupDelay();
-            itemEntity.setInvulnerable(true);
-            this.world.spawnEntity(itemEntity);
-        };
+                ItemEntity itemEntity = new ItemEntity(this.world, position.getX(), position.getY(), position.getZ(), itemStack);
+                itemEntity.setToDefaultPickupDelay();
+                itemEntity.setInvulnerable(true);
+                this.world.spawnEntity(itemEntity);
+            };
 
-        for (ItemStack stack : playerInventory.armor)
-            saveStack.accept(stack);
-
-        for (ItemStack stack : playerInventory.offHand)
-            saveStack.accept(stack);
-
-        for (ItemStack stack : playerInventory.main)
-            saveStack.accept(stack);
-
-        if (TrinketsCompat.isEnabled())
-            for (ItemStack stack : TrinketsCompat.getItems(player))
+            for (ItemStack stack : playerInventory.armor)
                 saveStack.accept(stack);
 
-        playerInventory.clear();
+            for (ItemStack stack : playerInventory.offHand)
+                saveStack.accept(stack);
+
+            for (ItemStack stack : playerInventory.main)
+                saveStack.accept(stack);
+
+            if (TrinketsCompat.isEnabled())
+                for (ItemStack stack : TrinketsCompat.getItems(player))
+                    saveStack.accept(stack);
+
+            playerInventory.clear();
+        }
 
         // Effects
         world.spawnParticles(ParticleTypes.SOUL_FIRE_FLAME, sign.getPos().getX(), sign.getPos().getY(), sign.getPos().getZ(), 500, 5, 3, 5, 0.001);
