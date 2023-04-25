@@ -78,8 +78,23 @@ public record Grave(ServerWorld world, BlockPos position)
         return inventories;
     }
 
+    public SignBlockEntity getSignEntity()
+    {
+        BlockEntity blockEntity = world.getBlockEntity(position);
+        if (!(blockEntity instanceof SignBlockEntity sign))
+        {
+            WorkingGraves.LOGGER.warn("Block entity at sign position is not a sign!");
+            return null;
+        }
+        return sign;
+    }
+
     private void setGraveText(ServerPlayerEntity player)
     {
+        SignBlockEntity sign = getSignEntity();
+        if (sign == null)
+            return;
+
         // Change sign
         sign.setTextOnRow(0, Text.literal(player.getEntityName()));
         sign.setTextOnRow(1, Text.literal("Level %d".formatted(player.experienceLevel)));
@@ -143,6 +158,10 @@ public record Grave(ServerWorld world, BlockPos position)
 
     public void spawnGraveEffects()
     {
+        SignBlockEntity sign = getSignEntity();
+        if (sign == null)
+            return;
+
         world.spawnParticles(ParticleTypes.SOUL_FIRE_FLAME, sign.getPos().getX(), sign.getPos().getY(), sign.getPos().getZ(), 500, 5, 3, 5, 0.001);
         for (int i = 0; i < 5; i++)
         {
@@ -157,10 +176,6 @@ public record Grave(ServerWorld world, BlockPos position)
 
     public void gravePlayer(ServerPlayerEntity player)
     {
-        BlockEntity blockEntity = world.getBlockEntity(position);
-        if (!(blockEntity instanceof SignBlockEntity sign))
-            return;
-
         // Populate grave with items
         if (!player.getWorld().getGameRules().getBoolean(GameRules.KEEP_INVENTORY))
             gravePlayerInventory(player);
