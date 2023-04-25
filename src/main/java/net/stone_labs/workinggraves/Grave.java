@@ -78,74 +78,71 @@ public record Grave(ServerWorld world, BlockPos position)
         return inventories;
     }
 
-    public void gravePlayer(ServerPlayerEntity player)
+    private void setGraveText(ServerPlayerEntity player)
     {
-        BlockEntity blockEntity = world.getBlockEntity(position);
-        if (!(blockEntity instanceof SignBlockEntity sign))
-            return;
-
         // Change sign
         sign.setTextOnRow(0, Text.literal(player.getEntityName()));
         sign.setTextOnRow(1, Text.literal("Level %d".formatted(player.experienceLevel)));
         sign.setTextOnRow(2, Text.literal(new SimpleDateFormat("yyyy MM dd").format(new Date())));
         sign.setTextOnRow(3, Text.literal(new SimpleDateFormat("HH:mm:ss").format(new Date())));
         world.getServer().getPlayerManager().sendToAll(sign.toUpdatePacket());
+    }
 
-        // Items
-        if (!player.getWorld().getGameRules().getBoolean(GameRules.KEEP_INVENTORY))
+    private void gravePlayerInventory(ServerPlayerEntity player)
+    {
+        PlayerInventory playerInventory = player.getInventory();
+        List<Inventory> targetInventories = getInventoryStorage();
+        List<Integer> targetSlots = IntStream.range(0, 30).boxed().collect(Collectors.toList());
+
+        java.util.function.Consumer<ItemStack> saveStack = (itemStack) ->
         {
-            PlayerInventory playerInventory = player.getInventory();
-            List<Inventory> targetInventories = getInventoryStorage();
-            List<Integer> targetSlots = IntStream.range(0, 30).boxed().collect(Collectors.toList());
+            if (itemStack.getItem().equals(Items.AIR))
+                return;
 
-            java.util.function.Consumer<ItemStack> saveStack = (itemStack) ->
-            {
-                if (itemStack.getItem().equals(Items.AIR))
-                    return;
+            if (EnchantmentHelper.hasVanishingCurse(itemStack))
+                return;
 
-                if (EnchantmentHelper.hasVanishingCurse(itemStack))
-                    return;
-
-                Collections.shuffle(targetInventories);
-                Collections.shuffle(targetSlots);
-                for (Inventory inventory : targetInventories)
-                    for (Integer slot : targetSlots)
-                        try
+            Collections.shuffle(targetInventories);
+            Collections.shuffle(targetSlots);
+            for (Inventory inventory : targetInventories)
+                for (Integer slot : targetSlots)
+                    try
+                    {
+                        ItemStack targetSlot = inventory.getStack(slot);
+                        if (targetSlot.getItem().equals(Items.AIR))
                         {
-                            ItemStack targetSlot = inventory.getStack(slot);
-                            if (targetSlot.getItem().equals(Items.AIR))
-                            {
-                                inventory.setStack(slot, itemStack);
-                                return;
-                            }
+                            inventory.setStack(slot, itemStack);
+                            return;
                         }
-                        catch (Exception ignored)
-                        {
-                        }
+                    }
+                    catch (Exception ignored)
+                    {
+                    }
 
-                ItemEntity itemEntity = new ItemEntity(this.world, position.getX(), position.getY(), position.getZ(), itemStack);
-                itemEntity.setToDefaultPickupDelay();
-                itemEntity.setInvulnerable(true);
-                this.world.spawnEntity(itemEntity);
-            };
+            ItemEntity itemEntity = new ItemEntity(this.world, position.getX(), position.getY(), position.getZ(), itemStack);
+            itemEntity.setToDefaultPickupDelay();
+            itemEntity.setInvulnerable(true);
+            this.world.spawnEntity(itemEntity);
+        };
 
-            for (ItemStack stack : playerInventory.armor)
+        for (ItemStack stack : playerInventory.armor)
+            saveStack.accept(stack);
+
+        for (ItemStack stack : playerInventory.offHand)
+            saveStack.accept(stack);
+
+        for (ItemStack stack : playerInventory.main)
+            saveStack.accept(stack);
+
+        if (TrinketsCompat.isEnabled())
+            for (ItemStack stack : TrinketsCompat.getItems(player))
                 saveStack.accept(stack);
 
-            for (ItemStack stack : playerInventory.offHand)
-                saveStack.accept(stack);
+        playerInventory.clear();
+    }
 
-            for (ItemStack stack : playerInventory.main)
-                saveStack.accept(stack);
-
-            if (TrinketsCompat.isEnabled())
-                for (ItemStack stack : TrinketsCompat.getItems(player))
-                    saveStack.accept(stack);
-
-            playerInventory.clear();
-        }
-
-        // Effects
+    public void spawnGraveEffects()
+    {
         world.spawnParticles(ParticleTypes.SOUL_FIRE_FLAME, sign.getPos().getX(), sign.getPos().getY(), sign.getPos().getZ(), 500, 5, 3, 5, 0.001);
         for (int i = 0; i < 5; i++)
         {
@@ -156,5 +153,19 @@ public record Grave(ServerWorld world, BlockPos position)
             lightningEntity.refreshPositionAfterTeleport(sign.getPos().getX() + random.nextFloat(), sign.getPos().getY(), sign.getPos().getZ() + random.nextFloat());
             world.spawnEntity(lightningEntity);
         }
+    }
+
+    public void gravePlayer(ServerPlayerEntity player)
+    {
+        BlockEntity blockEntity = world.getBlockEntity(position);
+        if (!(blockEntity instanceof SignBlockEntity sign))
+            return;
+
+        // Populate grave with items
+        if (!player.getWorld().getGameRules().getBoolean(GameRules.KEEP_INVENTORY))
+            gravePlayerInventory(player);
+
+        setGraveText(player);
+        spawnGraveEffects();
     }
 }
