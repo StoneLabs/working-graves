@@ -19,6 +19,7 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.random.Random;
+import net.stone_labs.workinggraves.compat.TrinketsCompat;
 
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -133,6 +134,10 @@ public record Grave(ServerWorld world, BlockPos position)
 
         for (ItemStack stack : playerInventory.main)
             saveStack.accept(stack);
+
+        if (TrinketsCompat.isEnabled())
+            for (ItemStack stack : TrinketsCompat.getItems(player))
+                saveStack.accept(stack);
 
         playerInventory.clear();
 
