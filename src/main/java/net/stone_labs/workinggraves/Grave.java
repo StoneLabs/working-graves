@@ -19,6 +19,7 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.random.Random;
+import net.minecraft.world.GameRules;
 import net.stone_labs.workinggraves.compat.TrinketsCompat;
 
 import java.text.SimpleDateFormat;
@@ -77,10 +78,21 @@ public record Grave(ServerWorld world, BlockPos position)
         return inventories;
     }
 
-    public void gravePlayer(ServerPlayerEntity player)
+    public SignBlockEntity getSignEntity()
     {
         BlockEntity blockEntity = world.getBlockEntity(position);
         if (!(blockEntity instanceof SignBlockEntity sign))
+        {
+            WorkingGraves.LOGGER.warn("Block entity at sign position is not a sign!");
+            return null;
+        }
+        return sign;
+    }
+
+    private void setGraveText(ServerPlayerEntity player)
+    {
+        SignBlockEntity sign = getSignEntity();
+        if (sign == null)
             return;
 
         // Change sign
@@ -89,8 +101,10 @@ public record Grave(ServerWorld world, BlockPos position)
         sign.setTextOnRow(2, Text.literal(new SimpleDateFormat("yyyy MM dd").format(new Date())));
         sign.setTextOnRow(3, Text.literal(new SimpleDateFormat("HH:mm:ss").format(new Date())));
         world.getServer().getPlayerManager().sendToAll(sign.toUpdatePacket());
+    }
 
-        // Items
+    private void gravePlayerInventory(ServerPlayerEntity player)
+    {
         PlayerInventory playerInventory = player.getInventory();
         List<Inventory> targetInventories = getInventoryStorage();
         List<Integer> targetSlots = IntStream.range(0, 30).boxed().collect(Collectors.toList());
@@ -140,8 +154,14 @@ public record Grave(ServerWorld world, BlockPos position)
                 saveStack.accept(stack);
 
         playerInventory.clear();
+    }
 
-        // Effects
+    public void spawnGraveEffects()
+    {
+        SignBlockEntity sign = getSignEntity();
+        if (sign == null)
+            return;
+
         world.spawnParticles(ParticleTypes.SOUL_FIRE_FLAME, sign.getPos().getX(), sign.getPos().getY(), sign.getPos().getZ(), 500, 5, 3, 5, 0.001);
         for (int i = 0; i < 5; i++)
         {
@@ -152,5 +172,15 @@ public record Grave(ServerWorld world, BlockPos position)
             lightningEntity.refreshPositionAfterTeleport(sign.getPos().getX() + random.nextFloat(), sign.getPos().getY(), sign.getPos().getZ() + random.nextFloat());
             world.spawnEntity(lightningEntity);
         }
+    }
+
+    public void gravePlayer(ServerPlayerEntity player)
+    {
+        // Populate grave with items
+        if (!player.getWorld().getGameRules().getBoolean(GameRules.KEEP_INVENTORY))
+            gravePlayerInventory(player);
+
+        setGraveText(player);
+        spawnGraveEffects();
     }
 }
