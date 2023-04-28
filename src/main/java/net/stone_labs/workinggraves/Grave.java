@@ -1,6 +1,5 @@
 package net.stone_labs.workinggraves;
 
-import net.minecraft.block.LightningRodBlock;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.LootableContainerBlockEntity;
 import net.minecraft.block.entity.SignBlockEntity;
@@ -20,7 +19,8 @@ import net.minecraft.util.Formatting;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.GameRules;
-import net.stone_labs.workinggraves.compat.TrinketsCompat;
+import net.stone_labs.workinggraves.compat.Mod;
+import net.stone_labs.workinggraves.compat.Trinkets.Trinkets;
 
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -149,9 +149,9 @@ public record Grave(ServerWorld world, BlockPos position)
         for (ItemStack stack : playerInventory.main)
             saveStack.accept(stack);
 
-        if (TrinketsCompat.isEnabled())
-            for (ItemStack stack : TrinketsCompat.getItems(player))
-                saveStack.accept(stack);
+
+        for (ItemStack stack : Mod.TRINKETS.runIfInstalled(() -> () -> Trinkets.getItems(player)).orElse(new ArrayList<ItemStack>()))
+            saveStack.accept(stack);
 
         playerInventory.clear();
     }
