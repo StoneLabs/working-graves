@@ -1,4 +1,4 @@
-package net.stone_labs.workinggraves.compat;
+package net.stone_labs.workinggraves.compat.Trinkets;
 
 import dev.emi.trinkets.api.SlotReference;
 import dev.emi.trinkets.api.TrinketEnums.DropRule;
@@ -10,9 +10,8 @@ import net.minecraft.util.Pair;
 import java.util.ArrayList;
 import java.util.List;
 
-public class TrinketsCompat
+public class Trinkets
 {
-    private static boolean enabled = false;
     public static List<ItemStack> getItems(ServerPlayerEntity player)
     {
         List<ItemStack> droppedTrinkets = new ArrayList<>();
@@ -39,15 +38,5 @@ public class TrinketsCompat
             }
         }
         return droppedTrinkets;
-    }
-
-    public static void enable()
-    {
-        enabled = true;
-    }
-
-    public static boolean isEnabled()
-    {
-        return enabled;
     }
 }
