@@ -7,7 +7,7 @@ import net.minecraft.nbt.NbtList;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.registry.RegistryEntry;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.world.PersistentState;
 import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.dimension.DimensionTypes;
@@ -26,6 +26,7 @@ public class GraveManager extends PersistentState
         graves = new ArrayList<>();
     }
 
+    // In analogy to net.minecraft.village.raid.RaidManager.nameFor
     public static String nameFor(RegistryEntry<DimensionType> dimensionTypeEntry) {
         if (dimensionTypeEntry.matchesKey(DimensionTypes.THE_END)) {
             return "graves_end";
