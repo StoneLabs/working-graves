@@ -1,4 +1,4 @@
-<img alt="GitHub Workflow Status (branch)" src="https://img.shields.io/github/actions/workflow/status/StoneLabs/working-graves/build.yml?branch=master&label=master&style=flat-square"> <img alt="GitHub issues" src="https://img.shields.io/github/issues/StoneLabs/working-graves?style=flat-square"> <img alt="Version" src="https://img.shields.io/badge/Minecraft%20Version-1.18, 1.18.2, 1.19.2-blue?style=flat-square"> <img alt="GitHub Repo stars" src="https://img.shields.io/github/stars/StoneLabs/working-graves?style=flat-square"> <img alt="GitHub all releases" src="https://img.shields.io/github/downloads/StoneLabs/working-graves/total?color=blue&label=downloads&style=flat-square">
+<img alt="GitHub Workflow Status (branch)" src="https://img.shields.io/github/actions/workflow/status/StoneLabs/working-graves/build.yml?branch=master&label=master&style=flat-square"> <img alt="GitHub issues" src="https://img.shields.io/github/issues/StoneLabs/working-graves?style=flat-square"> <img alt="Version" src="https://img.shields.io/badge/Minecraft%20Version-1.19.4-blue?style=flat-square"> <img alt="GitHub all releases" src="https://img.shields.io/github/downloads/StoneLabs/working-graves/total?color=gold&label=GH Downloads&style=flat-square"> <a href="https://modrinth.com/mod/working-graves"><img alt="Modrinth all releases" src="https://img.shields.io/modrinth/dt/GU61bZwi?color=gold&label=Modrinth Downloads&style=flat-square"></a>
 
 <img src="https://user-images.githubusercontent.com/19885942/133668909-406ae7e7-3012-4444-b2c4-392c94d51837.png" align="right" width="250" />
 
@@ -6,7 +6,7 @@
 
 Yet another graves mod, I know. Working graves is a fabric mod that allows for the construction of graves that will be populated on player death. That means you can build a graveyard that will fill up as time goes on. Pretty cool huh?
 
-Working graves is a dedicated server mod. __No client version is available__.
+Working graves is a server side mod. There is no need to install it on clients if you install it on your dedicated server. This means that, if installed on the server, it is completely vanilla compatible. Alternatively you can install in on the client for single player support.
 
 ## How to use
 
