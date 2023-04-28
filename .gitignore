@@ -34,3 +34,6 @@ run/
 
 # BabelEdit
 project.babel
+
+# Remapped sources
+remappedSrc/
