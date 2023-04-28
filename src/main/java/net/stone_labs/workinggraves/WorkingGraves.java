@@ -18,7 +18,7 @@ import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
 import net.stone_labs.workinggraves.commands.GravesCommand;
-import net.stone_labs.workinggraves.compat.TrinketsCompat;
+import net.stone_labs.workinggraves.compat.Trinkets.Trinkets;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -62,10 +62,6 @@ public class WorkingGraves implements ModInitializer
         {
             GraveHandler.requireSoulTorch = server.getGameRules().get(REQUIRE_SOUL_TORCH).get();
         });
-
-        // Check for Trinkets
-        if (FabricLoader.getInstance().isModLoaded("trinkets"))
-            TrinketsCompat.enable();
     }
 
     public static final GameRules.Key<GameRules.BooleanRule> REQUIRE_SOUL_TORCH = register("gravesRequireSoulTorch", GameRules.Category.PLAYER, GameRuleFactory.createBooleanRule(true, (server, rule) ->
