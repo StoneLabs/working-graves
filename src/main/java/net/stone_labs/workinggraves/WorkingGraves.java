@@ -61,12 +61,17 @@ public class WorkingGraves implements ModInitializer
         ServerLifecycleEvents.SERVER_STARTED.register(server ->
         {
             GraveHandler.requireSoulTorch = server.getGameRules().get(REQUIRE_SOUL_TORCH).get();
+            Grave.doLightningFire = server.getGameRules().get(DO_LIGHTNING_FIRE).get();
         });
     }
 
     public static final GameRules.Key<GameRules.BooleanRule> REQUIRE_SOUL_TORCH = register("gravesRequireSoulTorch", GameRules.Category.PLAYER, GameRuleFactory.createBooleanRule(true, (server, rule) ->
     {
         GraveHandler.requireSoulTorch = rule.get();
+    }));
+    public static final GameRules.Key<GameRules.BooleanRule> DO_LIGHTNING_FIRE = register("gravesDoLightningFire", GameRules.Category.PLAYER, GameRuleFactory.createBooleanRule(true, (server, rule) ->
+    {
+        Grave.doLightningFire = rule.get();
     }));
 
     private static <T extends GameRules.Rule<T>> GameRules.Key<T> register(String name, GameRules.Category category, GameRules.Type<T> type)
