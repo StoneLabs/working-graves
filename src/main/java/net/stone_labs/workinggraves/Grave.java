@@ -30,6 +30,7 @@ import java.util.stream.IntStream;
 public record Grave(ServerWorld world, BlockPos position)
 {
     public static String KEY = "hic portus animae";
+    public static boolean doLightningFire = true;
 
     public boolean isValid()
     {
@@ -165,8 +166,11 @@ public record Grave(ServerWorld world, BlockPos position)
         world.spawnParticles(ParticleTypes.SOUL_FIRE_FLAME, sign.getPos().getX(), sign.getPos().getY(), sign.getPos().getZ(), 500, 5, 3, 5, 0.001);
         for (int i = 0; i < 5; i++)
         {
-            LightningEntity lightningEntity = (LightningEntity)EntityType.LIGHTNING_BOLT.create(world);
             Random random = world.getRandom();
+
+            LightningEntity lightningEntity = (LightningEntity)EntityType.LIGHTNING_BOLT.create(world);
+            if (!doLightningFire)
+                lightningEntity.setCosmetic(true);
 
             //noinspection ConstantConditions
             lightningEntity.refreshPositionAfterTeleport(sign.getPos().getX() + random.nextFloat(), sign.getPos().getY(), sign.getPos().getZ() + random.nextFloat());
