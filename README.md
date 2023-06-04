@@ -19,6 +19,10 @@ Follow these steps for success.
 
 You can now go to the grave to collect your items.
 
+> :warning: **Important Note:**
+> 
+> Graves are dimension specific. If you die in the nether, you need a free grave in the nether. If you die in the end, you need a free grave in the end, etc... (I might add an option to only use overworld graves in the future)
+
 ## Server operators
 
 You can see various debug information using the /graves command.
