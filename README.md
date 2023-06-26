@@ -1,4 +1,4 @@
-<img alt="GitHub Workflow Status (branch)" src="https://img.shields.io/github/actions/workflow/status/StoneLabs/working-graves/build.yml?branch=master&label=master&style=flat-square"> <img alt="GitHub issues" src="https://img.shields.io/github/issues/StoneLabs/working-graves?style=flat-square"> <img alt="Version" src="https://img.shields.io/badge/Minecraft%20Version-1.19.4-blue?style=flat-square"> <img alt="GitHub all releases" src="https://img.shields.io/github/downloads/StoneLabs/working-graves/total?color=gold&label=GH Downloads&style=flat-square"> <a href="https://modrinth.com/mod/working-graves"><img alt="Modrinth all releases" src="https://img.shields.io/modrinth/dt/GU61bZwi?color=gold&label=Modrinth Downloads&style=flat-square"></a>
+<img alt="GitHub Workflow Status (branch)" src="https://img.shields.io/github/actions/workflow/status/StoneLabs/working-graves/build.yml?branch=master&label=master&style=flat-square"> <img alt="GitHub issues" src="https://img.shields.io/github/issues/StoneLabs/working-graves?style=flat-square"> <img alt="Version" src="https://img.shields.io/badge/Minecraft%20Version-1.19.4-blue?style=flat-square"> <img alt="GitHub Repo stars" src="https://img.shields.io/github/stars/StoneLabs/working-graves?style=flat-square"> <img alt="GitHub all releases" src="https://img.shields.io/github/downloads/StoneLabs/working-graves/total?color=gold&label=GH Downloads&style=flat-square"> <a href="https://modrinth.com/mod/working-graves"><img alt="Modrinth all releases" src="https://img.shields.io/modrinth/dt/GU61bZwi?color=gold&label=Modrinth Downloads&style=flat-square"></a>
 
 <img src="https://user-images.githubusercontent.com/19885942/133668909-406ae7e7-3012-4444-b2c4-392c94d51837.png" align="right" width="250" />
 
@@ -25,8 +25,8 @@ You can now go to the grave to collect your items.
 
 ## Server operators
 
-You can see various debug information using the /graves command.
-You can also use the `gravesRequireSoulTorch` gamerule to specify whether the soul torch is required for create a grave. 
+You can see various debug information using the `/graves` command.
+You can also use the `gravesRequireSoulTorch` gamerule to specify whether the soul torch is required for create a grave. The `gravesDoLightningFire` gamerule can be used to toggle whether the lightning can spawn fire.
 
 ## Download
 
