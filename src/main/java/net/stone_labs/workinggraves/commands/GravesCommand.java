@@ -50,7 +50,7 @@ public class GravesCommand
         GraveManager manager = GraveHandler.getManager(source.getWorld());
         List<Grave> graves = manager.getGraves();
 
-        source.sendFeedback(GravesCommandFormatter.gravesListPage(manager, graves, page), false);
+        source.sendFeedback(() -> GravesCommandFormatter.gravesListPage(manager, graves, page), false);
         return 0;
     }
 
@@ -61,23 +61,23 @@ public class GravesCommand
 
         if (grave == null)
         {
-            source.sendFeedback(Text.literal("No valid grave found :/"), false);
+            source.sendFeedback(() -> Text.literal("No valid grave found :/"), false);
             return 0;
         }
 
-        source.sendFeedback(GravesCommandFormatter.graveDistance(grave, source.getPlayer().getBlockPos()), false);
+        source.sendFeedback(() -> GravesCommandFormatter.graveDistance(grave, source.getPlayer().getBlockPos()), false);
         return 0;
     }
 
     private static int grave(ServerCommandSource source, Collection<ServerPlayerEntity> targets) throws CommandSyntaxException
     {
-        source.sendFeedback(GravesCommandFormatter.gravedListHeader(targets), false);
+        source.sendFeedback(() -> GravesCommandFormatter.gravedListHeader(targets), false);
         for (ServerPlayerEntity player : targets)
         {
-            GraveManager manager = GraveHandler.getManager(player.getWorld());
+            GraveManager manager = GraveHandler.getManager(player.getServerWorld());
             BlockPos pos = manager.gravePlayer(player);
 
-            source.sendFeedback(GravesCommandFormatter.gravedListEntry(player, pos), false);
+            source.sendFeedback(() -> GravesCommandFormatter.gravedListEntry(player, pos), false);
             player.sendMessage(GravesCommandFormatter.gravedDM(), false);
         }
         return 0;
