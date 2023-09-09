@@ -3,6 +3,7 @@ package net.stone_labs.workinggraves;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.LootableContainerBlockEntity;
 import net.minecraft.block.entity.SignBlockEntity;
+import net.minecraft.block.entity.SignText;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ItemEntity;
@@ -32,36 +33,101 @@ public record Grave(ServerWorld world, BlockPos position)
     public static String KEY = "hic portus animae";
     public static boolean doLightningFire = true;
 
-    public boolean isValid()
+    public SignBlockEntity getSignBlockEntity()
     {
         BlockEntity blockEntity = world.getBlockEntity(position);
         if (!(blockEntity instanceof SignBlockEntity sign))
+        {
+            WorkingGraves.LOGGER.warn("Block entity at sign position is not a sign!");
+            return null;
+        }
+        return sign;
+    }
+
+    public boolean isValid()
+    {
+        SignBlockEntity sign = getSignBlockEntity();
+        if (sign == null)
             return false;
 
-        if (!isGraveSign(sign))
+        return isValid(sign);
+    }
+    private boolean isValid(boolean side)
+    {
+        SignBlockEntity sign = getSignBlockEntity();
+        if (sign == null)
             return false;
 
-        //noinspection RedundantIfStatement
-        if (!sign.getTextOnRow(0, false).getStyle().isUnderlined())
+        return isValid(sign, side);
+    }
+    private static boolean isValid(SignBlockEntity sign)
+    {
+        return isValid(sign, true) || isValid(sign, false);
+    }
+    @SuppressWarnings({"PointlessBooleanExpression", "RedundantIfStatement"})
+    private static boolean isValid(SignBlockEntity sign, boolean side)
+    {
+        if (!isGrave(sign, side))
             return false;
 
-        return true;
+        if (side == true && sign.getFrontText().getMessage(0, false).getStyle().isUnderlined())
+            return true;
+
+        if (side == false && sign.getBackText().getMessage(0, false).getStyle().isUnderlined())
+            return true;
+
+        return false;
+    }
+
+    public boolean isGrave()
+    {
+        SignBlockEntity sign = getSignBlockEntity();
+        if (sign == null)
+            return false;
+
+        return isGrave(sign);
+    }
+    public boolean isGrave(boolean side)
+    {
+        SignBlockEntity sign = getSignBlockEntity();
+        if (sign == null)
+            return false;
+
+        return isGrave(sign, side);
+    }
+    public static boolean isGrave(SignBlockEntity sign)
+    {
+        return isGrave(sign, true) || isGrave(sign, false);
+    }
+    public static boolean isGrave(SignBlockEntity sign, boolean side)
+    {
+        if (side)
+            return sign.getFrontText().getMessage(0, false).getString().trim().equalsIgnoreCase(KEY);
+        else
+            return sign.getBackText().getMessage(0, false).getString().trim().equalsIgnoreCase(KEY);
     }
 
     public void makeValid()
     {
-        BlockEntity blockEntity = world.getBlockEntity(position);
-        if (!(blockEntity instanceof SignBlockEntity sign))
+        if (isGrave(true))
+            makeValid(true);
+
+        if (isGrave(false))
+            makeValid(false);
+    }
+    public void makeValid(boolean side)
+    {
+        SignBlockEntity sign = getSignBlockEntity();
+        if (sign == null)
             return;
 
         // Underline if required
-        sign.setTextOnRow(0, Text.literal(Grave.KEY).formatted(Formatting.UNDERLINE));
+        if (side)
+            sign.setText(sign.getFrontText().withMessage(0, Text.literal(Grave.KEY).formatted(Formatting.UNDERLINE)), true);
+        else
+            sign.setText(sign.getBackText().withMessage(0, Text.literal(Grave.KEY).formatted(Formatting.UNDERLINE)), false);
+        sign.setWaxed(true);
         world.getServer().getPlayerManager().sendToAll(sign.toUpdatePacket());
-    }
-
-    public static boolean isGraveSign(SignBlockEntity sign)
-    {
-        return sign.getTextOnRow(0, false).getString().trim().equalsIgnoreCase(KEY);
     }
 
     public List<Inventory> getInventoryStorage()
@@ -79,28 +145,31 @@ public record Grave(ServerWorld world, BlockPos position)
         return inventories;
     }
 
-    public SignBlockEntity getSignEntity()
-    {
-        BlockEntity blockEntity = world.getBlockEntity(position);
-        if (!(blockEntity instanceof SignBlockEntity sign))
-        {
-            WorkingGraves.LOGGER.warn("Block entity at sign position is not a sign!");
-            return null;
-        }
-        return sign;
-    }
-
     private void setGraveText(ServerPlayerEntity player)
     {
-        SignBlockEntity sign = getSignEntity();
+        Date date = new Date();
+
+        if (isGrave(true))
+            setGraveText(player, date, true);
+
+        if (isGrave(false))
+            setGraveText(player, date, false);
+    }
+    private void setGraveText(ServerPlayerEntity player, Date time, boolean side)
+    {
+        SignBlockEntity sign = getSignBlockEntity();
         if (sign == null)
             return;
 
         // Change sign
-        sign.setTextOnRow(0, Text.literal(player.getEntityName()));
-        sign.setTextOnRow(1, Text.literal("Level %d".formatted(player.experienceLevel)));
-        sign.setTextOnRow(2, Text.literal(new SimpleDateFormat("yyyy MM dd").format(new Date())));
-        sign.setTextOnRow(3, Text.literal(new SimpleDateFormat("HH:mm:ss").format(new Date())));
+        SignText signText = new SignText();
+        signText = signText.withMessage(0, Text.literal(player.getEntityName()));
+        signText = signText.withMessage(1, Text.literal("Level %d".formatted(player.experienceLevel)));
+        signText = signText.withMessage(2, Text.literal(new SimpleDateFormat("yyyy MM dd").format(time)));
+        signText = signText.withMessage(3, Text.literal(new SimpleDateFormat("HH:mm:ss").format(time)));
+        sign.setText(signText, side);
+        sign.setWaxed(true);
+
         world.getServer().getPlayerManager().sendToAll(sign.toUpdatePacket());
     }
 
@@ -159,7 +228,7 @@ public record Grave(ServerWorld world, BlockPos position)
 
     public void spawnGraveEffects()
     {
-        SignBlockEntity sign = getSignEntity();
+        SignBlockEntity sign = getSignBlockEntity();
         if (sign == null)
             return;
 

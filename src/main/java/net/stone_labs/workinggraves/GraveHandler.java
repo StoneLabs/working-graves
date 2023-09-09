@@ -23,7 +23,7 @@ public class GraveHandler
         if (requireSoulTorch && !player.getMainHandStack().getItem().equals(Items.SOUL_TORCH))
             return;
 
-        if (!Grave.isGraveSign(sign))
+        if (!Grave.isGrave(sign))
             return;
 
         Grave grave = new Grave(world, sign.getPos());

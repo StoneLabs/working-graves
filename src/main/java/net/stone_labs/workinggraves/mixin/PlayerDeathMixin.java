@@ -16,6 +16,6 @@ public class PlayerDeathMixin
     private void onPlayerDeath(DamageSource source, CallbackInfo info)
     {
         ServerPlayerEntity player = (ServerPlayerEntity) (Object) this;
-        GraveHandler.getManager(player.getWorld()).gravePlayer(player);
+        GraveHandler.getManager(player.getServerWorld()).gravePlayer(player);
     }
 }
