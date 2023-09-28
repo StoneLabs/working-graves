@@ -1,5 +1,6 @@
 package net.stone_labs.workinggraves;
 
+import net.minecraft.datafixer.DataFixTypes;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtIntArray;
@@ -32,6 +33,13 @@ public class GraveManager extends PersistentState
             return "graves_end";
         }
         return "graves";
+    }
+
+    public static Type<GraveManager> getPersistentStateType(ServerWorld world) {
+        return new Type<GraveManager>(
+                () -> new GraveManager(world),
+                (nbt) -> fromNbt(world, nbt),
+                DataFixTypes.SAVED_DATA_RANDOM_SEQUENCES);
     }
 
     public void addGrave(BlockPos pos)
