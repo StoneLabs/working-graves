@@ -2,9 +2,13 @@ package net.stone_labs.workinggraves;
 
 import net.minecraft.block.entity.SignBlockEntity;
 import net.minecraft.item.Items;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
+
+import java.util.function.Function;
+import java.util.function.Supplier;
 
 public class GraveHandler
 {
@@ -12,9 +16,9 @@ public class GraveHandler
 
     public static GraveManager getManager(ServerWorld world)
     {
+        // In analogy to ServerWorld RaidManager call
         return world.getPersistentStateManager().getOrCreate(
-                nbt -> GraveManager.fromNbt(world, nbt),
-                () -> new GraveManager(world),
+                GraveManager.getPersistentStateType(world),
                 GraveManager.nameFor(world.getDimensionEntry()));
     }
 
