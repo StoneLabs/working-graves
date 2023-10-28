@@ -6,7 +6,6 @@ import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.event.player.UseBlockCallback;
 import net.fabricmc.fabric.api.gamerule.v1.GameRuleFactory;
 import net.fabricmc.fabric.api.gamerule.v1.GameRuleRegistry;
-import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.SignBlockEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -18,7 +17,6 @@ import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
 import net.stone_labs.workinggraves.commands.GravesCommand;
-import net.stone_labs.workinggraves.compat.Trinkets.Trinkets;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -61,6 +59,7 @@ public class WorkingGraves implements ModInitializer
         ServerLifecycleEvents.SERVER_STARTED.register(server ->
         {
             GraveHandler.requireSoulTorch = server.getGameRules().get(REQUIRE_SOUL_TORCH).get();
+            GraveHandler.requiredPermissionLevel = server.getGameRules().get(REQUIRED_PERMISSION_LEVEL).get();
             Grave.doLightningFire = server.getGameRules().get(DO_LIGHTNING_FIRE).get();
         });
     }
@@ -68,6 +67,10 @@ public class WorkingGraves implements ModInitializer
     public static final GameRules.Key<GameRules.BooleanRule> REQUIRE_SOUL_TORCH = register("gravesRequireSoulTorch", GameRules.Category.PLAYER, GameRuleFactory.createBooleanRule(true, (server, rule) ->
     {
         GraveHandler.requireSoulTorch = rule.get();
+    }));
+    public static final GameRules.Key<GameRules.IntRule> REQUIRED_PERMISSION_LEVEL = register("gravesRequiredPermissionLevel", GameRules.Category.PLAYER, GameRuleFactory.createIntRule(0, (server, rule) ->
+    {
+        GraveHandler.requiredPermissionLevel = rule.get();
     }));
     public static final GameRules.Key<GameRules.BooleanRule> DO_LIGHTNING_FIRE = register("gravesDoLightningFire", GameRules.Category.PLAYER, GameRuleFactory.createBooleanRule(true, (server, rule) ->
     {
