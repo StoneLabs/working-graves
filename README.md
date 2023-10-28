@@ -26,7 +26,7 @@ You can now go to the grave to collect your items.
 ## Server operators
 
 You can see various debug information using the `/graves` command.
-You can also use the `gravesRequireSoulTorch` gamerule to specify whether the soul torch is required for create a grave. The `gravesDoLightningFire` gamerule can be used to toggle whether the lightning can spawn fire.
+You can also use the `gravesRequireSoulTorch` gamerule to specify whether the soul torch is required for create a grave. The `gravesDoLightningFire` gamerule can be used to toggle whether the lightning can spawn fire. Additionally, a permission level at least equal to `gravesRequiredPermissionLevel` is required to create graves (defaults to 0).
 
 ## Download
 
