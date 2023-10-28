@@ -2,17 +2,14 @@ package net.stone_labs.workinggraves;
 
 import net.minecraft.block.entity.SignBlockEntity;
 import net.minecraft.item.Items;
-import net.minecraft.nbt.NbtCompound;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 
-import java.util.function.Function;
-import java.util.function.Supplier;
-
 public class GraveHandler
 {
     public static boolean requireSoulTorch = true;
+    public static int requiredPermissionLevel = 0;
 
     public static GraveManager getManager(ServerWorld world)
     {
@@ -24,6 +21,9 @@ public class GraveHandler
 
     public static void Interact(ServerPlayerEntity player, ServerWorld world, SignBlockEntity sign)
     {
+        if (!player.hasPermissionLevel(requiredPermissionLevel))
+            return;
+
         if (requireSoulTorch && !player.getMainHandStack().getItem().equals(Items.SOUL_TORCH))
             return;
 
