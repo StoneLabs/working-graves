@@ -163,7 +163,7 @@ public record Grave(ServerWorld world, BlockPos position)
 
         // Change sign
         SignText signText = new SignText();
-        signText = signText.withMessage(0, Text.literal(player.getEntityName()));
+        signText = signText.withMessage(0, Text.literal(player.getGameProfile().getName()));
         signText = signText.withMessage(1, Text.literal("Level %d".formatted(player.experienceLevel)));
         signText = signText.withMessage(2, Text.literal(new SimpleDateFormat("yyyy MM dd").format(time)));
         signText = signText.withMessage(3, Text.literal(new SimpleDateFormat("HH:mm:ss").format(time)));

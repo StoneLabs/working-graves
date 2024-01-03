@@ -50,22 +50,22 @@ public class GravesCommandFormatter
 
         builder.append("\"\"]");
         //return new LiteralText(builder.toString());
-        return Text.Serializer.fromJson(builder.toString());
+        return Text.Serialization.fromJson(builder.toString());
     }
 
     public static Text graveDistance(Grave grave, BlockPos reference)
     {
-        return Text.Serializer.fromJson("[\"\",\"Next grave \",{\"text\":\"[%s]\",\"underlined\":true,\"color\":\"aqua\",\"clickEvent\":{\"action\":\"run_command\",\"value\":\"/tp %d %d %d\"}}, \" at distance %.2f blocks\"]"
+        return Text.Serialization.fromJson("[\"\",\"Next grave \",{\"text\":\"[%s]\",\"underlined\":true,\"color\":\"aqua\",\"clickEvent\":{\"action\":\"run_command\",\"value\":\"/tp %d %d %d\"}}, \" at distance %.2f blocks\"]"
                         .formatted(grave.position().toShortString(), grave.position().getX(), grave.position().getY(), grave.position().getZ(), Math.sqrt(grave.position().getSquaredDistance(reference))));
     }
 
     public static Text gravedListEntry(ServerPlayerEntity player, BlockPos pos)
     {
         if (pos == null)
-            return Text.literal("- %s: §4no grave available.§r".formatted(player.getEntityName()));
+            return Text.literal("- %s: §4no grave available.§r".formatted(player.getGameProfile().getName()));
         else
-            return Text.Serializer.fromJson("[\"- %s: \", {\"text\":\"[%d %d %d]\",\"underlined\":true,\"color\":\"aqua\",\"clickEvent\":{\"action\":\"run_command\",\"value\":\"/tp %2$d %3$d %4$d\"}}]"
-                    .formatted(player.getEntityName(), pos.getX(), pos.getY(), pos.getZ()));
+            return Text.Serialization.fromJson("[\"- %s: \", {\"text\":\"[%d %d %d]\",\"underlined\":true,\"color\":\"aqua\",\"clickEvent\":{\"action\":\"run_command\",\"value\":\"/tp %2$d %3$d %4$d\"}}]"
+                    .formatted(player.getGameProfile().getName(), pos.getX(), pos.getY(), pos.getZ()));
     }
 
     public static Text gravedListHeader(Collection<ServerPlayerEntity> targets)
