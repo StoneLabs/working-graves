@@ -79,11 +79,11 @@ public class GraveManager extends PersistentState
         Grave grave = findGrave(player.getBlockPos());
         if (grave == null)
         {
-            WorkingGraves.LOGGER.info("No grave found for player %s".formatted(player.getEntityName()));
+            WorkingGraves.LOGGER.info("No grave found for player %s".formatted(player.getGameProfile().getName()));
             return null;
         }
 
-        WorkingGraves.LOGGER.info("Found grave for player %s at %s".formatted(player.getEntityName(), grave.position().toShortString()));
+        WorkingGraves.LOGGER.info("Found grave for player %s at %s".formatted(player.getGameProfile().getName(), grave.position().toShortString()));
         grave.gravePlayer(player);
         removeGrave(grave.position());
         return grave.position();
