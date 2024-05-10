@@ -31,7 +31,6 @@ import java.util.stream.IntStream;
 public record Grave(ServerWorld world, BlockPos position)
 {
     public static String KEY = "hic portus animae";
-    public static boolean doLightningFire = true;
 
     public SignBlockEntity getSignBlockEntity()
     {
@@ -238,7 +237,7 @@ public record Grave(ServerWorld world, BlockPos position)
             Random random = world.getRandom();
 
             LightningEntity lightningEntity = (LightningEntity)EntityType.LIGHTNING_BOLT.create(world);
-            if (!doLightningFire)
+            if (!WorkingGraves.Settings.doLightningFire)
                 lightningEntity.setCosmetic(true);
 
             //noinspection ConstantConditions
