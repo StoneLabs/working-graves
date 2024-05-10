@@ -5,6 +5,7 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.math.BlockPos;
 import net.stone_labs.workinggraves.Grave;
+import net.stone_labs.workinggraves.GraveHandler;
 import net.stone_labs.workinggraves.GraveManager;
 
 import java.util.Collection;
@@ -59,13 +60,13 @@ public class GravesCommandFormatter
                         .formatted(grave.position().toShortString(), grave.position().getX(), grave.position().getY(), grave.position().getZ(), Math.sqrt(grave.position().getSquaredDistance(reference))));
     }
 
-    public static Text gravedListEntry(ServerPlayerEntity player, BlockPos pos)
+    public static Text gravedListEntry(ServerPlayerEntity player, GraveHandler.WorldBlockPosTuple pos)
     {
         if (pos == null)
             return Text.literal("- %s: §4no grave available.§r".formatted(player.getGameProfile().getName()));
         else
             return Text.Serialization.fromJson("[\"- %s: \", {\"text\":\"[%d %d %d]\",\"underlined\":true,\"color\":\"aqua\",\"clickEvent\":{\"action\":\"run_command\",\"value\":\"/tp %2$d %3$d %4$d\"}}]"
-                    .formatted(player.getGameProfile().getName(), pos.getX(), pos.getY(), pos.getZ()));
+                    .formatted(player.getGameProfile().getName(), pos.position().getX(), pos.position().getY(), pos.position().getZ()));
     }
 
     public static Text gravedListHeader(Collection<ServerPlayerEntity> targets)

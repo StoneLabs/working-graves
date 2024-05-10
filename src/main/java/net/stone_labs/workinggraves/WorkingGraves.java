@@ -14,15 +14,27 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
 import net.stone_labs.workinggraves.commands.GravesCommand;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.core.jmx.Server;
+
+import java.util.Objects;
 
 public class WorkingGraves implements ModInitializer
 {
+    public static class Settings
+    {
+        public static boolean requireSoulTorch = true;
+        public static boolean doLightningFire = true;
+        public static boolean graveInAllDimensions = true;
+        public static int requiredPermissionLevel = 0;
+    }
+
     public static final Logger LOGGER = LogManager.getLogger();
 
     public static final String MOD_ID = "workinggraves";
@@ -58,23 +70,28 @@ public class WorkingGraves implements ModInitializer
         // Set values from gamerules on server start
         ServerLifecycleEvents.SERVER_STARTED.register(server ->
         {
-            GraveHandler.requireSoulTorch = server.getGameRules().get(REQUIRE_SOUL_TORCH).get();
-            GraveHandler.requiredPermissionLevel = server.getGameRules().get(REQUIRED_PERMISSION_LEVEL).get();
-            Grave.doLightningFire = server.getGameRules().get(DO_LIGHTNING_FIRE).get();
+            WorkingGraves.Settings.requireSoulTorch = server.getGameRules().get(REQUIRE_SOUL_TORCH).get();
+            WorkingGraves.Settings.requiredPermissionLevel = server.getGameRules().get(REQUIRED_PERMISSION_LEVEL).get();
+            WorkingGraves.Settings.doLightningFire = server.getGameRules().get(DO_LIGHTNING_FIRE).get();
+            WorkingGraves.Settings.graveInAllDimensions = server.getGameRules().get(GRAVE_IN_ALL_DIMENSIONS).get();
         });
     }
 
     public static final GameRules.Key<GameRules.BooleanRule> REQUIRE_SOUL_TORCH = register("gravesRequireSoulTorch", GameRules.Category.PLAYER, GameRuleFactory.createBooleanRule(true, (server, rule) ->
     {
-        GraveHandler.requireSoulTorch = rule.get();
+        WorkingGraves.Settings.requireSoulTorch = rule.get();
     }));
     public static final GameRules.Key<GameRules.IntRule> REQUIRED_PERMISSION_LEVEL = register("gravesRequiredPermissionLevel", GameRules.Category.PLAYER, GameRuleFactory.createIntRule(0, (server, rule) ->
     {
-        GraveHandler.requiredPermissionLevel = rule.get();
+        WorkingGraves.Settings.requiredPermissionLevel = rule.get();
     }));
     public static final GameRules.Key<GameRules.BooleanRule> DO_LIGHTNING_FIRE = register("gravesDoLightningFire", GameRules.Category.PLAYER, GameRuleFactory.createBooleanRule(true, (server, rule) ->
     {
-        Grave.doLightningFire = rule.get();
+        WorkingGraves.Settings.doLightningFire = rule.get();
+    }));
+    public static final GameRules.Key<GameRules.BooleanRule> GRAVE_IN_ALL_DIMENSIONS = register("graveInAllDimensions", GameRules.Category.PLAYER, GameRuleFactory.createBooleanRule(true, (server, rule) ->
+    {
+        WorkingGraves.Settings.graveInAllDimensions = rule.get();
     }));
 
     private static <T extends GameRules.Rule<T>> GameRules.Key<T> register(String name, GameRules.Category category, GameRules.Type<T> type)

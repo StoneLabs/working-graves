@@ -19,14 +19,12 @@ Follow these steps for success.
 
 You can now go to the grave to collect your items.
 
-> :warning: **Important Note:**
-> 
-> Graves are dimension specific. If you die in the nether, you need a free grave in the nether. If you die in the end, you need a free grave in the end, etc... (I might add an option to only use overworld graves in the future)
+Graves initially attempt to be used in the dimension where the death occurred. If no available grave is found in the current dimension, the system will iteratively search through other server dimensions until an available grave is located. This behaviour can be toggled using gamerules.
 
 ## Server operators
 
 You can see various debug information using the `/graves` command.
-You can also use the `gravesRequireSoulTorch` gamerule to specify whether the soul torch is required for create a grave. The `gravesDoLightningFire` gamerule can be used to toggle whether the lightning can spawn fire. Additionally, a permission level at least equal to `gravesRequiredPermissionLevel` is required to create graves (defaults to 0).
+You can also use the `gravesRequireSoulTorch` gamerule to specify whether the soul torch is required for create a grave. The `gravesDoLightningFire` gamerule can be used to toggle whether the lightning can spawn fire and `graveInAllDimensions` toggles wether players can be graved in other dimensions. Additionally, a permission level at least equal to `gravesRequiredPermissionLevel` is required to create graves (defaults to 0).
 
 ## Download
 
