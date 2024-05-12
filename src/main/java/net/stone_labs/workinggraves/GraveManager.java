@@ -70,12 +70,7 @@ public class GraveManager extends PersistentState
 
     public BlockPos gravePlayer(ServerPlayerEntity player)
     {
-        if (player.getWorld() != world)
-        {
-            WorkingGraves.LOGGER.warn("Attempting to grave player in incorrect dimension.");
-            return null;
-        }
-
+        // TODO: How should the nearest grave be defined in interdimensional graving?
         Grave grave = findGrave(player.getBlockPos());
         if (grave == null)
         {
