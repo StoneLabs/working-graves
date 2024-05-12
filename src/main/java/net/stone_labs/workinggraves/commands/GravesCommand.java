@@ -8,9 +8,7 @@ import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
-import net.stone_labs.workinggraves.Grave;
-import net.stone_labs.workinggraves.GraveHandler;
-import net.stone_labs.workinggraves.GraveManager;
+import net.stone_labs.workinggraves.*;
 
 import java.util.Collection;
 import java.util.List;
@@ -25,14 +23,16 @@ public class GravesCommand
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher)
     {
         dispatcher.register(literal("graves")
-                .requires((source) -> source.hasPermissionLevel(2))
                 .then(literal("list")
+                        .requires(WorkingGraves.PERMISSION_MANAGER.require(PermissionManager.Permission.COMMAND_LIST))
                         .then(argument("page", IntegerArgumentType.integer(0))
                                 .executes((context) -> list(context.getSource(), IntegerArgumentType.getInteger(context, "page"))))
                         .executes((context) -> list(context.getSource())))
                 .then(literal("find")
+                        .requires(WorkingGraves.PERMISSION_MANAGER.require(PermissionManager.Permission.COMMAND_FIND))
                         .executes((context) -> find(context.getSource())))
                 .then(literal("grave")
+                        .requires(WorkingGraves.PERMISSION_MANAGER.require(PermissionManager.Permission.COMMAND_DEBUG))
                         .then(argument("targets", EntityArgumentType.players())
                                 .executes((context) -> grave(context.getSource(), getPlayers(context, "targets"))))
                         .executes((context) -> grave(context.getSource(), List.of(context.getSource().getPlayer()))))

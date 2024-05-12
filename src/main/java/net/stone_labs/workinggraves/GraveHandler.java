@@ -30,7 +30,7 @@ public class GraveHandler
         {
             return new WorldBlockPosTuple(currentWorld, graveManager.gravePlayer(player));
         }
-        else if (WorkingGraves.Settings.graveInAllDimensions)
+        else if (WorkingGraves.Settings.graveInAllDimensions && WorkingGraves.PERMISSION_MANAGER.check(player, PermissionManager.Permission.INTERDIMENSIONAL))
         {
             for (ServerWorld world : Objects.requireNonNull(player.getServer()).getWorlds())
             {
@@ -45,7 +45,7 @@ public class GraveHandler
 
     public static void Interact(ServerPlayerEntity player, ServerWorld world, SignBlockEntity sign)
     {
-        if (!player.hasPermissionLevel(WorkingGraves.Settings.requiredPermissionLevel))
+        if (!WorkingGraves.PERMISSION_MANAGER.check(player, PermissionManager.Permission.NEW))
             return;
 
         if (WorkingGraves.Settings.requireSoulTorch && !player.getMainHandStack().getItem().equals(Items.SOUL_TORCH))

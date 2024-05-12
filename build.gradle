@@ -18,6 +18,8 @@ repositories {
 	// Loom adds the essential maven repositories to download Minecraft and libraries from automatically.
 	// See https://docs.gradle.org/current/userguide/declaring_repositories.html
 	// for more information about repositories.
+	// Requirement for Permission Api
+	mavenCentral()
 
 	// Requirements for Trinkets
 	maven { url = "https://jitpack.io" }
@@ -43,6 +45,9 @@ dependencies {
 
 	// Trinkets
 	modCompileOnly "dev.emi:trinkets:${project.trinkets_version}"
+
+	// Fabric Permission API
+	include(modImplementation("me.lucko:fabric-permissions-api:${permission_version}"))
 }
 
 processResources {

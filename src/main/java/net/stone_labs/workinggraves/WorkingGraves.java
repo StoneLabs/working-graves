@@ -32,10 +32,10 @@ public class WorkingGraves implements ModInitializer
         public static boolean requireSoulTorch = true;
         public static boolean doLightningFire = true;
         public static boolean graveInAllDimensions = true;
-        public static int requiredPermissionLevel = 0;
     }
 
     public static final Logger LOGGER = LogManager.getLogger();
+    public static final PermissionManager PERMISSION_MANAGER = PermissionManager.instance();
 
     public static final String MOD_ID = "workinggraves";
     public static final String MOD_NAME = "Working Graves";
@@ -71,7 +71,7 @@ public class WorkingGraves implements ModInitializer
         ServerLifecycleEvents.SERVER_STARTED.register(server ->
         {
             WorkingGraves.Settings.requireSoulTorch = server.getGameRules().get(REQUIRE_SOUL_TORCH).get();
-            WorkingGraves.Settings.requiredPermissionLevel = server.getGameRules().get(REQUIRED_PERMISSION_LEVEL).get();
+            PERMISSION_MANAGER.setPermissionLevel(PermissionManager.Permission.NEW, server.getGameRules().get(REQUIRED_PERMISSION_LEVEL).get());
             WorkingGraves.Settings.doLightningFire = server.getGameRules().get(DO_LIGHTNING_FIRE).get();
             WorkingGraves.Settings.graveInAllDimensions = server.getGameRules().get(GRAVE_IN_ALL_DIMENSIONS).get();
         });
@@ -83,7 +83,7 @@ public class WorkingGraves implements ModInitializer
     }));
     public static final GameRules.Key<GameRules.IntRule> REQUIRED_PERMISSION_LEVEL = register("gravesRequiredPermissionLevel", GameRules.Category.PLAYER, GameRuleFactory.createIntRule(0, (server, rule) ->
     {
-        WorkingGraves.Settings.requiredPermissionLevel = rule.get();
+        PERMISSION_MANAGER.setPermissionLevel(PermissionManager.Permission.NEW, rule.get());
     }));
     public static final GameRules.Key<GameRules.BooleanRule> DO_LIGHTNING_FIRE = register("gravesDoLightningFire", GameRules.Category.PLAYER, GameRuleFactory.createBooleanRule(true, (server, rule) ->
     {
