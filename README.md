@@ -26,6 +26,25 @@ Graves initially attempt to be used in the dimension where the death occurred. I
 You can see various debug information using the `/graves` command.
 You can also use the `gravesRequireSoulTorch` gamerule to specify whether the soul torch is required for create a grave. The `gravesDoLightningFire` gamerule can be used to toggle whether the lightning can spawn fire and `graveInAllDimensions` toggles wether players can be graved in other dimensions. Additionally, a permission level at least equal to `gravesRequiredPermissionLevel` is required to create graves (defaults to 0).
 
+## Permissions
+
+In order to manage and control the behavior of the graves within your Minecraft server, the following permissions can be granted to players or roles:
+
+- **graves.use** (0) - Allows a player to utilize an existing grave. This is necessary for players to be able to interact with their graves and retrieve items after death.
+
+- **graves.interdimensional** (0) - This permission allows players to use graves across different dimensions. With this permission, players can use a grave in the Nether, the End, or the Overworld, regardless of where they died. By default, this permission is set to true, enabling interdimensional grave usage for all players unless specifically restricted.
+
+- **graves.new** (gravesRequiredPermissionLevel) - Grants the ability to create a new grave. This permission is crucial for setting up new gravesites.
+
+- **graves.command.list** (2) - Permits the use of the `/graves list` command to display a list of all existing graves. Useful for administrators to manage and oversee grave placements.
+
+- **graves.command.find** (2) - Allows the use of the `/graves find` command to locate the nearest available grave. This can be particularly helpful for players in large graveyards.
+
+- **graves.command.debug** (2) - Enables the use of the `/graves grave` and `/graves grave <player>` commands for testing and debugging purposes. This command can be restricted to server operators or testers.
+
+Ensure that these permissions are appropriately set to maintain balance and control over the graves' functionalities on your server.
+
+
 ## Download
 
 [See the release page.](https://github.com/StoneLabs/working-graves/releases)
