@@ -106,8 +106,8 @@ public class GravesCommandFormatter
         if (pos == null)
             return Text.literal("- %s: §4no grave available.§r".formatted(player.getGameProfile().getName()));
         else
-            return Text.Serialization.fromJson("[\"- %s: \", {\"text\":\"[%d %d %d]\",\"underlined\":true,\"color\":\"aqua\",\"clickEvent\":{\"action\":\"run_command\",\"value\":\"/tp %2$d %3$d %4$d\"}}]"
-                    .formatted(player.getGameProfile().getName(), pos.position().getX(), pos.position().getY(), pos.position().getZ()));
+            return Text.Serialization.fromJson("[\"- %s: \", {\"text\":\"[%d %d %d] (%s)\",\"underlined\":true,\"color\":\"aqua\",\"clickEvent\":{\"action\":\"run_command\",\"value\":\"/execute in %5$s run tp %2$d %3$d %4$d\"}}]"
+                    .formatted(player.getGameProfile().getName(), pos.position().getX(), pos.position().getY(), pos.position().getZ(), pos.server().getRegistryKey().getValue().toString()));
     }
 
     public static Text gravedListHeader(Collection<ServerPlayerEntity> targets)

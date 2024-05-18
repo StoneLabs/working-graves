@@ -102,7 +102,6 @@ public class GravesCommand
         source.sendFeedback(() -> GravesCommandFormatter.gravedListHeader(targets), false);
         for (ServerPlayerEntity player : targets)
         {
-            GraveManager manager = GraveManager.getManager(player.getServerWorld());
             var pos = GraveManager.GravePlayerInAll(player);
 
             source.sendFeedback(() -> GravesCommandFormatter.gravedListEntry(player, pos), false);

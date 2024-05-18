@@ -17,6 +17,7 @@ import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.dimension.DimensionTypes;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -76,17 +77,40 @@ public class GraveManager extends PersistentState
 
     public BlockPos gravePlayer(ServerPlayerEntity player)
     {
-        Grave grave = findGrave(player.getBlockPos());
+        Grave grave;
+
+        if (player.getWorld() == this.world)
+            grave = findGrave(player.getBlockPos());
+        else
+            grave = findRandomGrave();
+
         if (grave == null)
         {
-            WorkingGraves.LOGGER.info("No grave found for player %s".formatted(player.getGameProfile().getName()));
+            WorkingGraves.LOGGER.info("No grave found for player %s in %s"
+                    .formatted(player.getGameProfile().getName(), world.getRegistryKey().getValue().toString()));
             return null;
         }
 
-        WorkingGraves.LOGGER.info("Found grave for player %s at %s in %s".formatted(player.getGameProfile().getName(), grave.position().toShortString(), this.world.getRegistryKey()));
+        WorkingGraves.LOGGER.info("Found grave for player %s at %s in %s".
+                formatted(player.getGameProfile().getName(), grave.position().toShortString(), world.getRegistryKey().getValue().toString()));
         grave.gravePlayer(player);
         removeGrave(grave.position());
         return grave.position();
+    }
+
+    public Grave findRandomGrave()
+    {
+        List<Grave> allGraves = new ArrayList<>(graves); // Copy
+        Collections.shuffle(allGraves);
+
+        for (Grave grave : allGraves)
+        {
+            if (grave.isValid())
+                return grave;
+            else
+                removeGrave(grave.position());
+        }
+        return null;
     }
 
     public Grave findGrave(BlockPos pos)
@@ -147,15 +171,22 @@ public class GraveManager extends PersistentState
 
         if (!graveManager.getGraves().isEmpty())
         {
-            return new WorldBlockPosTuple(currentWorld, graveManager.gravePlayer(player));
+            BlockPos currectWorldPos = graveManager.gravePlayer(player);
+            if (currectWorldPos != null) // Might happen if all graves are invalid
+                return new WorldBlockPosTuple(currentWorld, currectWorldPos);
         }
-        else if (WorkingGraves.Settings.graveInAllDimensions)
+
+        if (WorkingGraves.Settings.graveInAllDimensions)
         {
             for (ServerWorld world : Objects.requireNonNull(player.getServer()).getWorlds())
             {
                 GraveManager otherWorldGraveManager = GraveManager.getManager(world);
                 if (!otherWorldGraveManager.getGraves().isEmpty())
-                    return new WorldBlockPosTuple(world, otherWorldGraveManager.gravePlayer(player));
+                {
+                    BlockPos otherWorldPos = otherWorldGraveManager.gravePlayer(player);
+                    if (otherWorldPos != null) // Might happen if all graves are invalid
+                        return new WorldBlockPosTuple(world, otherWorldPos);
+                }
             }
         }
 
