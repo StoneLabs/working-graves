@@ -1,7 +1,7 @@
 plugins {
 	// Loom 1.2 is recommended by fabric but can't be used because of trinkets#244
 	// https://github.com/emilyploszaj/trinkets/issues/244
-	id 'fabric-loom' version '1.0-SNAPSHOT'
+	id 'fabric-loom' version '1.6-SNAPSHOT'
 	id 'maven-publish'
 }
 
