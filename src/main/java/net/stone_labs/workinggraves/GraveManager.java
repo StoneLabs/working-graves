@@ -70,12 +70,6 @@ public class GraveManager extends PersistentState
 
     public BlockPos gravePlayer(ServerPlayerEntity player)
     {
-        if (player.getWorld() != world)
-        {
-            WorkingGraves.LOGGER.warn("Attempting to grave player in incorrect dimension.");
-            return null;
-        }
-
         Grave grave = findGrave(player.getBlockPos());
         if (grave == null)
         {
@@ -83,7 +77,7 @@ public class GraveManager extends PersistentState
             return null;
         }
 
-        WorkingGraves.LOGGER.info("Found grave for player %s at %s".formatted(player.getGameProfile().getName(), grave.position().toShortString()));
+        WorkingGraves.LOGGER.info("Found grave for player %s at %s in %s".formatted(player.getGameProfile().getName(), grave.position().toShortString(), this.world.getRegistryKey()));
         grave.gravePlayer(player);
         removeGrave(grave.position());
         return grave.position();
