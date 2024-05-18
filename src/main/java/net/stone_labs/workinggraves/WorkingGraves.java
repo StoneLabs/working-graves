@@ -50,7 +50,7 @@ public class WorkingGraves implements ModInitializer
             {
                 BlockEntity blockEntity = world.getBlockEntity(hitResult.getBlockPos());
                 if (blockEntity instanceof SignBlockEntity)
-                    GraveHandler.Interact((ServerPlayerEntity) player, (ServerWorld) world, (SignBlockEntity) blockEntity);
+                    GraveManager.HandleSignInteraction((ServerPlayerEntity) player, (SignBlockEntity) blockEntity);
             }
             return ActionResult.PASS;
         }

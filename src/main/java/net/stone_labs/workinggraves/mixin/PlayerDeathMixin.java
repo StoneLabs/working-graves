@@ -2,7 +2,7 @@ package net.stone_labs.workinggraves.mixin;
 
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.stone_labs.workinggraves.GraveHandler;
+import net.stone_labs.workinggraves.GraveManager;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -16,6 +16,6 @@ public class PlayerDeathMixin
     private void onPlayerDeath(DamageSource source, CallbackInfo info)
     {
         ServerPlayerEntity player = (ServerPlayerEntity) (Object) this;
-        GraveHandler.GravePlayerInAllManagers(player);
+        GraveManager.GravePlayerInAll(player);
     }
 }
