@@ -7,7 +7,6 @@ import net.minecraft.util.Formatting;
 import net.minecraft.util.Pair;
 import net.minecraft.util.math.BlockPos;
 import net.stone_labs.workinggraves.Grave;
-import net.stone_labs.workinggraves.GraveHandler;
 import net.stone_labs.workinggraves.GraveManager;
 import net.stone_labs.workinggraves.WorkingGraves;
 
@@ -102,7 +101,7 @@ public class GravesCommandFormatter
                         .formatted(grave.position().toShortString(), grave.position().getX(), grave.position().getY(), grave.position().getZ(), Math.sqrt(grave.position().getSquaredDistance(reference))));
     }
 
-    public static Text gravedListEntry(ServerPlayerEntity player, GraveHandler.WorldBlockPosTuple pos)
+    public static Text gravedListEntry(ServerPlayerEntity player, GraveManager.WorldBlockPosTuple pos)
     {
         if (pos == null)
             return Text.literal("- %s: §4no grave available.§r".formatted(player.getGameProfile().getName()));

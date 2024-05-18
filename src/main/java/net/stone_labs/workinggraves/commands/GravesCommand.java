@@ -11,7 +11,6 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
 import net.minecraft.util.Pair;
 import net.stone_labs.workinggraves.Grave;
-import net.stone_labs.workinggraves.GraveHandler;
 import net.stone_labs.workinggraves.GraveManager;
 
 import java.util.*;
@@ -58,12 +57,12 @@ public class GravesCommand
         List<Pair<ServerWorld, Integer>> worlds = new ArrayList<>();
 
         ServerWorld currentWorld = source.getWorld();
-        int currentWorldGraves = GraveHandler.getManager(currentWorld).getGraves().size();
+        int currentWorldGraves = GraveManager.getManager(currentWorld).getGraves().size();
         worlds.add(new Pair<>(currentWorld, currentWorldGraves));
 
         for (ServerWorld serverWorld : source.getServer().getWorlds())
             if (serverWorld != currentWorld)
-                worlds.add(new Pair<>(serverWorld, GraveHandler.getManager(serverWorld).getGraves().size()));
+                worlds.add(new Pair<>(serverWorld, GraveManager.getManager(serverWorld).getGraves().size()));
 
         source.sendFeedback(() -> GravesCommandFormatter.gravesMultiWorldListPage(worlds, page), false);
         return 0;
@@ -76,7 +75,7 @@ public class GravesCommand
 
     private static int list(ServerCommandSource source, ServerWorld world, int page) throws CommandSyntaxException
     {
-        GraveManager manager = GraveHandler.getManager(world);
+        GraveManager manager = GraveManager.getManager(world);
         List<Grave> graves = manager.getGraves();
 
         source.sendFeedback(() -> GravesCommandFormatter.gravesListPage(manager, graves, page), false);
@@ -85,7 +84,7 @@ public class GravesCommand
 
     private static int find(ServerCommandSource source) throws CommandSyntaxException
     {
-        GraveManager manager = GraveHandler.getManager(source.getWorld());
+        GraveManager manager = GraveManager.getManager(source.getWorld());
         Grave grave = manager.findGrave(source.getPlayer().getBlockPos());
 
         if (grave == null)
@@ -103,8 +102,8 @@ public class GravesCommand
         source.sendFeedback(() -> GravesCommandFormatter.gravedListHeader(targets), false);
         for (ServerPlayerEntity player : targets)
         {
-            GraveManager manager = GraveHandler.getManager(player.getServerWorld());
-            var pos = GraveHandler.GravePlayerInAllManagers(player);
+            GraveManager manager = GraveManager.getManager(player.getServerWorld());
+            var pos = GraveManager.GravePlayerInAll(player);
 
             source.sendFeedback(() -> GravesCommandFormatter.gravedListEntry(player, pos), false);
             player.sendMessage(GravesCommandFormatter.gravedDM(), false);
