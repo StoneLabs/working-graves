@@ -19,7 +19,7 @@ Follow these steps for success.
 
 You can now go to the grave to collect your items.
 
-Graves initially attempt to be used in the dimension where the death occurred. If no available grave is found in the current dimension, the system will iteratively search through other server dimensions until an available grave is located. This behaviour can be toggled using gamerules.
+Graves initially attempt to be used in the dimension where the death occurred. If no available grave is found in the current dimension, the system will iteratively search through other server dimensions in a random manner until an available grave is located. This behaviour can be toggled using gamerules.
 
 ## Server operators
 
