@@ -26,6 +26,10 @@ Graves initially attempt to be used in the dimension where the death occurred. I
 You can see various debug information using the `/graves` command.
 You can also use the `gravesRequireSoulTorch` gamerule to specify whether the soul torch is required for create a grave. The `gravesDoLightningFire` gamerule can be used to toggle whether the lightning can spawn fire and `graveInAllDimensions` toggles wether players can be graved in other dimensions. Additionally, a permission level at least equal to `gravesRequiredPermissionLevel` is required to create graves (defaults to 0).
 
+### Grave Key Configuration
+
+To change the default grave key (`hic portus animae`), use the `/graves key change` command while looking at a sign with the new desired key text. To view the current grave key, use `/graves key get`.
+
 ## Permissions
 
 In order to manage and control the behavior of the graves within your Minecraft server, the following permissions can be granted to players or roles:

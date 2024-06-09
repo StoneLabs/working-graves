@@ -21,6 +21,7 @@ public class PermissionManager {
         map.put(Permission.NEW, 0);
         map.put(Permission.COMMAND_LIST, 2);
         map.put(Permission.COMMAND_FIND, 2);
+        map.put(Permission.COMMAND_KEY, 2);
         map.put(Permission.COMMAND_DEBUG, 2);
         map.put(Permission.INTERDIMENSIONAL, 0);
     }
@@ -50,6 +51,7 @@ public class PermissionManager {
         NEW("graves.new"),
         COMMAND_LIST("graves.command.list"),
         COMMAND_FIND("graves.command.find"),
+        COMMAND_KEY("graves.command.key"),
         COMMAND_DEBUG("graves.command.debug"),
         INTERDIMENSIONAL("graves.interdimensional");
 

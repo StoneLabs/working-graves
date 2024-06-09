@@ -1,10 +1,12 @@
 package net.stone_labs.workinggraves;
 
+import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.SignBlockEntity;
 import net.minecraft.item.Items;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.state.property.Properties;
 import net.minecraft.util.math.BlockPos;
 
 import java.util.Objects;
@@ -51,14 +53,36 @@ public class GraveHandler
         if (WorkingGraves.Settings.requireSoulTorch && !player.getMainHandStack().getItem().equals(Items.SOUL_TORCH))
             return;
 
-        if (!Grave.isGrave(sign))
+        BlockState signState = sign.getCachedState();
+        int signFacing = 0;
+
+        try {
+            signFacing = switch (signState.get(Properties.HORIZONTAL_FACING).asString()) {
+                case "east" -> 270;
+                case "north" -> 180;
+                case "west" -> 90;
+                default -> signFacing;
+            };
+        } catch (IllegalArgumentException e) {
+            signFacing = (int) (signState.get(Properties.ROTATION) * 22.5);
+        }
+
+        float playerRotation = player.getYaw();
+        playerRotation = (playerRotation % 360 + 360) % 360;
+
+        float relativeAngle = Math.abs(playerRotation - signFacing);
+        relativeAngle = relativeAngle > 180 ? 360 - relativeAngle : relativeAngle;
+
+        boolean lookingAtFront = relativeAngle > 90;
+
+        if (!Grave.isGrave(sign, lookingAtFront))
             return;
 
         Grave grave = new Grave(world, sign.getPos());
         GraveManager manager = getManager(world);
 
         // Make grave valid and register
-        grave.makeValid();
+        grave.makeValid(lookingAtFront);
         manager.addGrave(grave.position());
 
         world.spawnParticles(ParticleTypes.GLOW, sign.getPos().getX(), sign.getPos().getY(), sign.getPos().getZ(), 5, 1, 1, 1, 0.1);

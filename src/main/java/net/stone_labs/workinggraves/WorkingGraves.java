@@ -32,6 +32,7 @@ public class WorkingGraves implements ModInitializer
         public static boolean requireSoulTorch = true;
         public static boolean doLightningFire = true;
         public static boolean graveInAllDimensions = true;
+        public static final String[] graveKey = new String[4];
     }
 
     public static final Logger LOGGER = LogManager.getLogger();
@@ -74,6 +75,7 @@ public class WorkingGraves implements ModInitializer
             PERMISSION_MANAGER.setPermissionLevel(PermissionManager.Permission.NEW, server.getGameRules().get(REQUIRED_PERMISSION_LEVEL).get());
             WorkingGraves.Settings.doLightningFire = server.getGameRules().get(DO_LIGHTNING_FIRE).get();
             WorkingGraves.Settings.graveInAllDimensions = server.getGameRules().get(GRAVE_IN_ALL_DIMENSIONS).get();
+            WorkingGraves.Settings.graveKey[0] = "hic portus animae";
         });
     }
 

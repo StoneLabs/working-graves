@@ -30,8 +30,6 @@ import java.util.stream.IntStream;
 
 public record Grave(ServerWorld world, BlockPos position)
 {
-    public static String KEY = "hic portus animae";
-
     public SignBlockEntity getSignBlockEntity()
     {
         BlockEntity blockEntity = world.getBlockEntity(position);
@@ -63,19 +61,21 @@ public record Grave(ServerWorld world, BlockPos position)
     {
         return isValid(sign, true) || isValid(sign, false);
     }
-    @SuppressWarnings({"PointlessBooleanExpression", "RedundantIfStatement"})
+
     private static boolean isValid(SignBlockEntity sign, boolean side)
     {
         if (!isGrave(sign, side))
             return false;
 
-        if (side == true && sign.getFrontText().getMessage(0, false).getStyle().isUnderlined())
-            return true;
+        GraveManager manager = GraveHandler.getManager((ServerWorld) sign.getWorld());
+        Text[] signText = sign.getText(side).getMessages(false);
 
-        if (side == false && sign.getBackText().getMessage(0, false).getStyle().isUnderlined())
-            return true;
-
-        return false;
+        boolean valid = true;
+        String[] texts = manager.getKey();
+        for (int i = 0; i < signText.length; i++) {
+            valid = valid && texts[i].equalsIgnoreCase(signText[i].getString()) && signText[i].getStyle().isUnderlined();
+        }
+        return valid;
     }
 
     public boolean isGrave()
@@ -86,6 +86,14 @@ public record Grave(ServerWorld world, BlockPos position)
 
         return isGrave(sign);
     }
+    public boolean isGrave(String[] key)
+    {
+        SignBlockEntity sign = getSignBlockEntity();
+        if (sign == null)
+            return false;
+
+        return isGrave(sign, key);
+    }
     public boolean isGrave(boolean side)
     {
         SignBlockEntity sign = getSignBlockEntity();
@@ -94,16 +102,35 @@ public record Grave(ServerWorld world, BlockPos position)
 
         return isGrave(sign, side);
     }
+    public boolean isGrave(boolean side, String[] key)
+    {
+        SignBlockEntity sign = getSignBlockEntity();
+        if (sign == null)
+            return false;
+
+        return isGrave(sign, side, key);
+    }
     public static boolean isGrave(SignBlockEntity sign)
     {
         return isGrave(sign, true) || isGrave(sign, false);
     }
-    public static boolean isGrave(SignBlockEntity sign, boolean side)
+    public static boolean isGrave(SignBlockEntity sign, String[] key)
     {
-        if (side)
-            return sign.getFrontText().getMessage(0, false).getString().trim().equalsIgnoreCase(KEY);
-        else
-            return sign.getBackText().getMessage(0, false).getString().trim().equalsIgnoreCase(KEY);
+        return isGrave(sign, true, key) || isGrave(sign, false, key);
+    }public static boolean isGrave(SignBlockEntity sign, boolean side)
+{
+    GraveManager manager = GraveHandler.getManager((ServerWorld) sign.getWorld());
+    return isGrave(sign, side, manager.getKey());
+}
+    public static boolean isGrave(SignBlockEntity sign, boolean side, String[] key)
+    {
+        Text[] signText = sign.getText(side).getMessages(true);
+
+        boolean equal = true;
+        for (int i = 0; i < signText.length; i++) {
+            equal = equal && signText[i].getString().equalsIgnoreCase(key[i]);
+        }
+        return equal;
     }
 
     public void makeValid()
@@ -120,11 +147,13 @@ public record Grave(ServerWorld world, BlockPos position)
         if (sign == null)
             return;
 
-        // Underline if required
-        if (side)
-            sign.setText(sign.getFrontText().withMessage(0, Text.literal(Grave.KEY).formatted(Formatting.UNDERLINE)), true);
-        else
-            sign.setText(sign.getBackText().withMessage(0, Text.literal(Grave.KEY).formatted(Formatting.UNDERLINE)), false);
+        GraveManager manager = GraveHandler.getManager(world);
+        String[] texts = manager.getKey();
+        SignText signText = new SignText();
+        for (int i = 0; i < texts.length; i++) {
+            signText = signText.withMessage(i, Text.literal(texts[i]).formatted(Formatting.UNDERLINE));
+        }
+        sign.setText(signText, side);
         sign.setWaxed(true);
         world.getServer().getPlayerManager().sendToAll(sign.toUpdatePacket());
     }

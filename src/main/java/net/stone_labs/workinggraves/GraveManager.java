@@ -16,15 +16,27 @@ import net.minecraft.world.dimension.DimensionTypes;
 import java.util.ArrayList;
 import java.util.List;
 
-public class GraveManager extends PersistentState
-{
+public class GraveManager extends PersistentState {
     ServerWorld world;
     List<Grave> graves;
+    String[] key;
 
-    public GraveManager(ServerWorld world)
-    {
+    public void setKey(String[] key) {
+        this.key = key;
+    }
+
+    public String[] getKey() {
+        return key;
+    }
+
+    public GraveManager(ServerWorld world) {
         this.world = world;
         graves = new ArrayList<>();
+        key = new String[4];
+        key[0] = "hic portus animae";
+        key[1] = "";
+        key[2] = "";
+        key[3] = "";
     }
 
     // In analogy to net.minecraft.village.raid.RaidManager.nameFor
@@ -42,8 +54,7 @@ public class GraveManager extends PersistentState
                 DataFixTypes.SAVED_DATA_RANDOM_SEQUENCES);
     }
 
-    public void addGrave(BlockPos pos)
-    {
+    public void addGrave(BlockPos pos) {
         if (graves.stream().anyMatch(grave -> grave.position().equals(pos)))
             return;
 
@@ -52,28 +63,23 @@ public class GraveManager extends PersistentState
         this.setDirty(true);
     }
 
-    public void removeGrave(BlockPos pos)
-    {
+    public void removeGrave(BlockPos pos) {
         if (graves.removeIf(grave -> grave.position().equals(pos)))
             this.setDirty(true);
     }
 
-    public List<Grave> getGraves()
-    {
+    public List<Grave> getGraves() {
         return graves;
     }
 
-    public ServerWorld getWorld()
-    {
+    public ServerWorld getWorld() {
         return world;
     }
 
-    public BlockPos gravePlayer(ServerPlayerEntity player)
-    {
+    public BlockPos gravePlayer(ServerPlayerEntity player) {
         // TODO: How should the nearest grave be defined in interdimensional graving?
         Grave grave = findGrave(player.getBlockPos());
-        if (grave == null)
-        {
+        if (grave == null) {
             WorkingGraves.LOGGER.info("No grave found for player %s".formatted(player.getGameProfile().getName()));
             return null;
         }
@@ -84,16 +90,14 @@ public class GraveManager extends PersistentState
         return grave.position();
     }
 
-    public Grave findGrave(BlockPos pos)
-    {
+    public Grave findGrave(BlockPos pos) {
         Grave[] closestGraves = graves.stream().sorted((o1, o2) -> {
             double o1Dist = o1.position().getSquaredDistance(pos);
             double o2Dist = o2.position().getSquaredDistance(pos);
             return Double.compare(o1Dist, o2Dist);
         }).toArray(Grave[]::new);
 
-        for (Grave grave : closestGraves)
-        {
+        for (Grave grave : closestGraves) {
             if (grave.isValid())
                 return grave;
             else
@@ -102,12 +106,22 @@ public class GraveManager extends PersistentState
         return null;
     }
 
-    public static GraveManager fromNbt(ServerWorld serverWorld, NbtCompound nbt)
-    {
+    public void updateGravesKey(String[] oldKey) {
+        for (Grave grave : getGraves()) {
+            if (grave.isValid())
+                continue;
+
+            if (grave.isGrave(true, oldKey))
+                grave.makeValid(true);
+            if (grave.isGrave(false, oldKey))
+                grave.makeValid(false);
+        }
+    }
+
+    public static GraveManager fromNbt(ServerWorld serverWorld, NbtCompound nbt) {
         GraveManager manager = new GraveManager(serverWorld);
         NbtList graveList = nbt.getList("graves", NbtElement.INT_ARRAY_TYPE);
-        for (NbtElement graveEntry : graveList)
-        {
+        for (NbtElement graveEntry : graveList) {
             NbtIntArray gravePosition = (NbtIntArray) graveEntry;
             manager.addGrave(new BlockPos(gravePosition.get(0).intValue(), gravePosition.get(1).intValue(), gravePosition.get(2).intValue()));
         }
@@ -116,11 +130,10 @@ public class GraveManager extends PersistentState
     }
 
     @Override
-    public NbtCompound writeNbt(NbtCompound nbt)
-    {
+    public NbtCompound writeNbt(NbtCompound nbt) {
         NbtList NbtGraves = new NbtList();
         for (Grave grave : graves)
-           NbtGraves.add(new NbtIntArray(new int[] {grave.position().getX(), grave.position().getY(), grave.position().getZ()}));
+            NbtGraves.add(new NbtIntArray(new int[]{grave.position().getX(), grave.position().getY(), grave.position().getZ()}));
 
         nbt.put("graves", NbtGraves);
         return nbt;
