@@ -13,30 +13,43 @@ import net.minecraft.world.PersistentState;
 import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.dimension.DimensionTypes;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 public class GraveManager extends PersistentState {
     ServerWorld world;
     List<Grave> graves;
-    String[] key;
+    String[] privateKey;
+    String[] publicKey;
 
-    public void setKey(String[] key) {
-        this.key = key;
+    public void setPrivateKey(String[] key) {
+        this.privateKey = key;
     }
 
-    public String[] getKey() {
-        return key;
+    public String[] getPrivateKey() {
+        return privateKey;
+    }
+
+    public void setPublicKey(String[] key) {
+        this.publicKey = key;
+    }
+
+    public String[] getPublicKey() {
+        return publicKey;
     }
 
     public GraveManager(ServerWorld world) {
         this.world = world;
         graves = new ArrayList<>();
-        key = new String[4];
-        key[0] = "hic portus animae";
-        key[1] = "";
-        key[2] = "";
-        key[3] = "";
+        privateKey = new String[4];
+        publicKey = new String[4];
+        for (int i = 1; i < 4; i++) {
+            privateKey[i] = "";
+            publicKey[i] = "";
+        }
+        privateKey[0] = "hic portus animae";
+        privateKey[1] = "meae animae";
+        privateKey[2] = "reservatus";
+        publicKey[0] = "hic portus animae";
     }
 
     // In analogy to net.minecraft.village.raid.RaidManager.nameFor
@@ -54,13 +67,16 @@ public class GraveManager extends PersistentState {
                 DataFixTypes.SAVED_DATA_RANDOM_SEQUENCES);
     }
 
-    public void addGrave(BlockPos pos) {
-        if (graves.stream().anyMatch(grave -> grave.position().equals(pos)))
-            return;
+    public Grave addGrave(BlockPos pos, boolean isPrivate, UUID ownerUUID) {
+        Optional<Grave> existingGrave = graves.stream().filter(grave -> grave.position().equals(pos)).findFirst();
+        if (existingGrave.isPresent()) {
+            return existingGrave.get();
+        }
 
-        Grave grave = new Grave(world, pos);
-        graves.add(grave);
+        Grave newGrave = new Grave(world, pos, isPrivate, ownerUUID);
+        graves.add(newGrave);
         this.setDirty(true);
+        return newGrave;
     }
 
     public void removeGrave(BlockPos pos) {
@@ -78,7 +94,7 @@ public class GraveManager extends PersistentState {
 
     public BlockPos gravePlayer(ServerPlayerEntity player) {
         // TODO: How should the nearest grave be defined in interdimensional graving?
-        Grave grave = findGrave(player.getBlockPos());
+        Grave grave = findGrave(player.getBlockPos(), player.getUuid());
         if (grave == null) {
             WorkingGraves.LOGGER.info("No grave found for player %s".formatted(player.getGameProfile().getName()));
             return null;
@@ -90,20 +106,23 @@ public class GraveManager extends PersistentState {
         return grave.position();
     }
 
-    public Grave findGrave(BlockPos pos) {
-        Grave[] closestGraves = graves.stream().sorted((o1, o2) -> {
-            double o1Dist = o1.position().getSquaredDistance(pos);
-            double o2Dist = o2.position().getSquaredDistance(pos);
-            return Double.compare(o1Dist, o2Dist);
-        }).toArray(Grave[]::new);
+    public Grave findGrave(BlockPos pos, UUID playerUUID) {
+        List<Grave> closestGraves = graves.stream()
+                .sorted(Comparator.comparingDouble(grave -> grave.position().getSquaredDistance(pos)))
+                .toList();
 
+        Grave publicGrave = null;
         for (Grave grave : closestGraves) {
-            if (grave.isValid())
-                return grave;
-            else
-                removeGrave(grave.position());
+            if (grave.isValid()) {
+                if (grave.isPrivate() && grave.ownerUUID().equals(playerUUID)) {
+                    return grave;
+                } else if (!grave.isPrivate() && publicGrave == null) {
+                    publicGrave = grave;
+                }
+            }
         }
-        return null;
+
+        return publicGrave != null ? publicGrave : (closestGraves.isEmpty() ? null : closestGraves.get(0));
     }
 
     public void updateGravesKey(String[] oldKey) {
@@ -120,10 +139,23 @@ public class GraveManager extends PersistentState {
 
     public static GraveManager fromNbt(ServerWorld serverWorld, NbtCompound nbt) {
         GraveManager manager = new GraveManager(serverWorld);
-        NbtList graveList = nbt.getList("graves", NbtElement.INT_ARRAY_TYPE);
-        for (NbtElement graveEntry : graveList) {
-            NbtIntArray gravePosition = (NbtIntArray) graveEntry;
-            manager.addGrave(new BlockPos(gravePosition.get(0).intValue(), gravePosition.get(1).intValue(), gravePosition.get(2).intValue()));
+        NbtList graveList = nbt.getList("graves", NbtElement.COMPOUND_TYPE);
+
+        if (!graveList.isEmpty()) {
+            for (NbtElement graveEntry : graveList) {
+                NbtCompound graveCompound = (NbtCompound) graveEntry;
+                BlockPos pos = new BlockPos(graveCompound.getInt("x"), graveCompound.getInt("y"), graveCompound.getInt("z"));
+                UUID ownerUUID = graveCompound.getUuid("ownerUUID");
+                boolean isPrivate = graveCompound.getBoolean("isPrivate");
+                manager.addGrave(pos, isPrivate, ownerUUID);
+            }
+        } else {
+            graveList = nbt.getList("graves", NbtElement.INT_ARRAY_TYPE);
+            for (NbtElement graveEntry : graveList) {
+                NbtIntArray gravePosition = (NbtIntArray) graveEntry;
+                BlockPos pos = new BlockPos(gravePosition.get(0).intValue(), gravePosition.get(1).intValue(), gravePosition.get(2).intValue());
+                manager.addGrave(pos, false, UUID.randomUUID());
+            }
         }
 
         return manager;
@@ -131,11 +163,18 @@ public class GraveManager extends PersistentState {
 
     @Override
     public NbtCompound writeNbt(NbtCompound nbt) {
-        NbtList NbtGraves = new NbtList();
-        for (Grave grave : graves)
-            NbtGraves.add(new NbtIntArray(new int[]{grave.position().getX(), grave.position().getY(), grave.position().getZ()}));
+        NbtList nbtGraves = new NbtList();
+        for (Grave grave : graves) {
+            NbtCompound graveCompound = new NbtCompound();
+            graveCompound.putInt("x", grave.position().getX());
+            graveCompound.putInt("y", grave.position().getY());
+            graveCompound.putInt("z", grave.position().getZ());
+            graveCompound.putUuid("ownerUUID", grave.ownerUUID());
+            graveCompound.putBoolean("isPrivate", grave.isPrivate());
+            nbtGraves.add(graveCompound);
+        }
 
-        nbt.put("graves", NbtGraves);
+        nbt.put("graves", nbtGraves);
         return nbt;
     }
 }

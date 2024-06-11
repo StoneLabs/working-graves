@@ -19,6 +19,8 @@ public class PermissionManager {
     public PermissionManager() {
         map.put(Permission.USE, 0);
         map.put(Permission.NEW, 0);
+        map.put(Permission.NEW_PUBLIC, 0);
+        map.put(Permission.NEW_PRIVATE, 0);
         map.put(Permission.COMMAND_LIST, 2);
         map.put(Permission.COMMAND_FIND, 2);
         map.put(Permission.COMMAND_KEY, 2);
@@ -49,6 +51,8 @@ public class PermissionManager {
     public enum Permission {
         USE("graves.use"),
         NEW("graves.new"),
+        NEW_PUBLIC("graves.new.public"),
+        NEW_PRIVATE("graves.new.private"),
         COMMAND_LIST("graves.command.list"),
         COMMAND_FIND("graves.command.find"),
         COMMAND_KEY("graves.command.key"),

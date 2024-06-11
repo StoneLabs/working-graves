@@ -28,10 +28,37 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-public record Grave(ServerWorld world, BlockPos position)
-{
-    public SignBlockEntity getSignBlockEntity()
-    {
+public class Grave {
+    private final ServerWorld world;
+    private final BlockPos position;
+    private final boolean isPrivate;
+    private final UUID ownerUUID;
+
+    @Deprecated
+    public Grave(ServerWorld world, BlockPos position) {
+        this(world, position, false, UUID.randomUUID()); // default for old graves is public
+    }
+
+    public Grave(ServerWorld world, BlockPos position, boolean isPrivate, UUID ownerUUID) {
+        this.world = world;
+        this.position = position;
+        this.isPrivate = isPrivate;
+        this.ownerUUID = ownerUUID;
+    }
+
+    public BlockPos position() {
+        return position;
+    }
+
+    public boolean isPrivate() {
+        return isPrivate;
+    }
+
+    public UUID ownerUUID() {
+        return ownerUUID;
+    }
+
+    public SignBlockEntity getSignBlockEntity() {
         BlockEntity blockEntity = world.getBlockEntity(position);
         if (!(blockEntity instanceof SignBlockEntity sign))
         {
@@ -71,9 +98,10 @@ public record Grave(ServerWorld world, BlockPos position)
         Text[] signText = sign.getText(side).getMessages(false);
 
         boolean valid = true;
-        String[] texts = manager.getKey();
+        String[] privateKey = manager.getPrivateKey();
+        String[] publicKey = manager.getPublicKey();
         for (int i = 0; i < signText.length; i++) {
-            valid = valid && texts[i].equalsIgnoreCase(signText[i].getString()) && signText[i].getStyle().isUnderlined();
+            valid = valid && (privateKey[i].equalsIgnoreCase(signText[i].getString()) || publicKey[i].equalsIgnoreCase(signText[i].getString())) && signText[i].getStyle().isUnderlined();
         }
         return valid;
     }
@@ -120,7 +148,7 @@ public record Grave(ServerWorld world, BlockPos position)
     }public static boolean isGrave(SignBlockEntity sign, boolean side)
 {
     GraveManager manager = GraveHandler.getManager((ServerWorld) sign.getWorld());
-    return isGrave(sign, side, manager.getKey());
+    return isGrave(sign, side, manager.getPrivateKey()) || isGrave(sign, side, manager.getPublicKey());
 }
     public static boolean isGrave(SignBlockEntity sign, boolean side, String[] key)
     {
@@ -148,7 +176,7 @@ public record Grave(ServerWorld world, BlockPos position)
             return;
 
         GraveManager manager = GraveHandler.getManager(world);
-        String[] texts = manager.getKey();
+        String[] texts = isPrivate ? manager.getPrivateKey() : manager.getPublicKey();
         SignText signText = new SignText();
         for (int i = 0; i < texts.length; i++) {
             signText = signText.withMessage(i, Text.literal(texts[i]).formatted(Formatting.UNDERLINE));
@@ -246,7 +274,6 @@ public record Grave(ServerWorld world, BlockPos position)
 
         for (ItemStack stack : playerInventory.main)
             saveStack.accept(stack);
-
 
         for (ItemStack stack : Mod.TRINKETS.runIfInstalled(() -> () -> Trinkets.getItems(player)).orElse(new ArrayList<ItemStack>()))
             saveStack.accept(stack);

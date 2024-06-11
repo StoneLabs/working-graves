@@ -10,6 +10,7 @@ import net.minecraft.state.property.Properties;
 import net.minecraft.util.math.BlockPos;
 
 import java.util.Objects;
+import java.util.UUID;
 
 public class GraveHandler
 {
@@ -78,12 +79,20 @@ public class GraveHandler
         if (!Grave.isGrave(sign, lookingAtFront))
             return;
 
-        Grave grave = new Grave(world, sign.getPos());
         GraveManager manager = getManager(world);
+        boolean isPrivate = Grave.isGrave(sign, lookingAtFront, manager.getPrivateKey());
+        boolean noPermission =
+            (isPrivate && !WorkingGraves.PERMISSION_MANAGER.check(player,
+                PermissionManager.Permission.NEW_PRIVATE)) ||
+            (!isPrivate && !WorkingGraves.PERMISSION_MANAGER.check(player,
+                PermissionManager.Permission.NEW_PUBLIC));
 
-        // Make grave valid and register
+        if (noPermission)
+            return;
+
+        UUID ownerUUID = isPrivate ? player.getUuid() : UUID.randomUUID();
+        Grave grave = manager.addGrave(sign.getPos(), isPrivate, ownerUUID);
         grave.makeValid(lookingAtFront);
-        manager.addGrave(grave.position());
 
         world.spawnParticles(ParticleTypes.GLOW, sign.getPos().getX(), sign.getPos().getY(), sign.getPos().getZ(), 5, 1, 1, 1, 0.1);
     }

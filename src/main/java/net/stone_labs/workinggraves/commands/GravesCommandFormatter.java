@@ -1,8 +1,10 @@
 package net.stone_labs.workinggraves.commands;
 
+import com.mojang.authlib.GameProfile;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
+import net.minecraft.util.UserCache;
 import net.minecraft.util.math.BlockPos;
 import net.stone_labs.workinggraves.Grave;
 import net.stone_labs.workinggraves.GraveHandler;
@@ -10,6 +12,7 @@ import net.stone_labs.workinggraves.GraveManager;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 
 public class GravesCommandFormatter
 {
@@ -33,6 +36,30 @@ public class GravesCommandFormatter
                     builder.append("{\"text\":\"(GRAVE IS VALID)\",\"color\":\"green\"}, ");
                 else
                     builder.append("{\"text\":\"(GRAVE IS INVALID)\",\"color\":\"dark_red\"}, ");
+
+                if (graves.get(i).isPrivate()) {
+                    builder.append("{\"text\":\"[PRIVATE]\",\"color\":\"yellow\"}, ");
+
+                    ServerPlayerEntity playerEntity = manager.getWorld().getServer().getPlayerManager().getPlayer(graves.get(i).ownerUUID());
+                    String playerName = "Unknown";
+
+                    if (playerEntity != null) {
+                        playerName = playerEntity.getName().getString();
+                    } else {
+                        UserCache userCache = manager.getWorld().getServer().getUserCache();
+                        if (userCache != null) {
+                            GameProfile profile = manager.getWorld().getServer().getUserCache().getByUuid(graves.get(i).ownerUUID()).orElse(null);
+                            if (profile != null) {
+                                playerName = profile.getName();
+                            }
+                        }
+                    }
+
+                    builder.append("\" \", {\"text\":\"Owner: %s (UUID: %s)\",\"color\":\"#2AA198\"}, "
+                            .formatted(playerName, graves.get(i).ownerUUID().toString()));
+                } else {
+                    builder.append("{\"text\":\"[PUBLIC]\",\"color\":\"blue\"}, ");
+                }
             }
             else
                 builder.append("\"\n- %2d: \", ".formatted(i));
