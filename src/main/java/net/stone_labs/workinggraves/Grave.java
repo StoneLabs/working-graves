@@ -9,6 +9,7 @@ import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LightningEntity;
+import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
@@ -249,7 +250,7 @@ public record Grave(ServerWorld world, BlockPos position)
         {
             Random random = world.getRandom();
 
-            LightningEntity lightningEntity = (LightningEntity)EntityType.LIGHTNING_BOLT.create(world);
+            LightningEntity lightningEntity = (LightningEntity)EntityType.LIGHTNING_BOLT.create(world, SpawnReason.EVENT);
             if (!WorkingGraves.Settings.doLightningFire)
                 lightningEntity.setCosmetic(true);
 
@@ -262,7 +263,7 @@ public record Grave(ServerWorld world, BlockPos position)
     public void gravePlayer(ServerPlayerEntity player)
     {
         // Populate grave with items
-        if (!player.getWorld().getGameRules().getBoolean(GameRules.KEEP_INVENTORY))
+        if (!player.server.getGameRules().getBoolean(GameRules.KEEP_INVENTORY))
             gravePlayerInventory(player);
 
         setGraveText(player);
