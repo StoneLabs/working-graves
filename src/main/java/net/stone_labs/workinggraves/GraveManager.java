@@ -8,6 +8,7 @@ import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtIntArray;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
@@ -23,6 +24,7 @@ import java.util.Objects;
 
 public class GraveManager extends PersistentState
 {
+
     public record WorldBlockPosTuple(ServerWorld server, BlockPos position){}
 
     ServerWorld world;
@@ -45,7 +47,7 @@ public class GraveManager extends PersistentState
     public static Type<GraveManager> getPersistentStateType(ServerWorld world) {
         return new Type<GraveManager>(
                 () -> new GraveManager(world),
-                (nbt) -> fromNbt(world, nbt),
+                (nbt, registryWrapper) -> fromNbt(world, nbt, registryWrapper),
                 DataFixTypes.SAVED_DATA_RANDOM_SEQUENCES);
     }
 
@@ -131,7 +133,7 @@ public class GraveManager extends PersistentState
         return null;
     }
 
-    public static GraveManager fromNbt(ServerWorld serverWorld, NbtCompound nbt)
+    public static GraveManager fromNbt(ServerWorld serverWorld, NbtCompound nbt, RegistryWrapper. WrapperLookup registryWrapper)
     {
         GraveManager manager = new GraveManager(serverWorld);
         NbtList graveList = nbt.getList("graves", NbtElement.INT_ARRAY_TYPE);
@@ -145,16 +147,15 @@ public class GraveManager extends PersistentState
     }
 
     @Override
-    public NbtCompound writeNbt(NbtCompound nbt)
+    public NbtCompound writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup)
     {
         NbtList NbtGraves = new NbtList();
         for (Grave grave : graves)
-           NbtGraves.add(new NbtIntArray(new int[] {grave.position().getX(), grave.position().getY(), grave.position().getZ()}));
+            NbtGraves.add(new NbtIntArray(new int[] {grave.position().getX(), grave.position().getY(), grave.position().getZ()}));
 
         nbt.put("graves", NbtGraves);
         return nbt;
     }
-
 
     public static GraveManager getManager(ServerWorld world)
     {
