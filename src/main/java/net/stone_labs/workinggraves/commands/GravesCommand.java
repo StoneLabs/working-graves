@@ -64,7 +64,7 @@ public class GravesCommand
             if (serverWorld != currentWorld)
                 worlds.add(new Pair<>(serverWorld, GraveManager.getManager(serverWorld).getGraves().size()));
 
-        source.sendFeedback(() -> GravesCommandFormatter.gravesMultiWorldListPage(worlds, page), false);
+        source.sendFeedback(() -> GravesCommandFormatter.gravesMultiWorldListPage(worlds, page, source.getRegistryManager()), false);
         return 0;
     }
 
@@ -78,7 +78,7 @@ public class GravesCommand
         GraveManager manager = GraveManager.getManager(world);
         List<Grave> graves = manager.getGraves();
 
-        source.sendFeedback(() -> GravesCommandFormatter.gravesListPage(manager, graves, page), false);
+        source.sendFeedback(() -> GravesCommandFormatter.gravesListPage(manager, graves, page, source.getRegistryManager()), false);
         return 0;
     }
 
@@ -93,7 +93,7 @@ public class GravesCommand
             return 0;
         }
 
-        source.sendFeedback(() -> GravesCommandFormatter.graveDistance(grave, source.getPlayer().getBlockPos()), false);
+        source.sendFeedback(() -> GravesCommandFormatter.graveDistance(grave, source.getPlayer().getBlockPos(), source.getRegistryManager()), false);
         return 0;
     }
 
