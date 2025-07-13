@@ -4,7 +4,9 @@ import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.LootableContainerBlockEntity;
 import net.minecraft.block.entity.SignBlockEntity;
 import net.minecraft.block.entity.SignText;
+import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
+import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LightningEntity;
@@ -13,10 +15,17 @@ import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.Registry;
+import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.registry.tag.EnchantmentTags;
+import net.minecraft.registry.tag.TagKey;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.GameRules;
@@ -183,7 +192,13 @@ public record Grave(ServerWorld world, BlockPos position)
             if (itemStack.getItem().equals(Items.AIR))
                 return;
 
-            if (EnchantmentHelper.hasVanishingCurse(itemStack))
+            boolean hasVanishingCurse = itemStack.getEnchantments()
+                    .getEnchantments()
+                    .stream()
+                    .anyMatch((entry) -> entry.getIdAsString().equals(Enchantments.VANISHING_CURSE.getValue().toString()));
+
+
+            if (hasVanishingCurse)
                 return;
 
             Collections.shuffle(targetInventories);

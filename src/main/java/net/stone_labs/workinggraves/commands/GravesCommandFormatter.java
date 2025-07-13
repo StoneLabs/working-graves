@@ -1,5 +1,6 @@
 package net.stone_labs.workinggraves.commands;
 
+import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
@@ -17,7 +18,7 @@ public class GravesCommandFormatter
 {
     public static int pageLimit = 8;
 
-    public static Text gravesMultiWorldListPage(List<Pair<ServerWorld, Integer>> worlds, int page)
+    public static Text gravesMultiWorldListPage(List<Pair<ServerWorld, Integer>> worlds, int page, DynamicRegistryManager registryManager)
     {
         StringBuilder builder = new StringBuilder();
 
@@ -54,9 +55,9 @@ public class GravesCommandFormatter
 
         builder.append("\"\"]");
         //return new LiteralText(builder.toString());
-        return Text.Serialization.fromJson(builder.toString());
+        return Text.Serialization.fromJson(builder.toString(), registryManager);
     }
-    public static Text gravesListPage(GraveManager manager, List<Grave> graves, int page)
+    public static Text gravesListPage(GraveManager manager, List<Grave> graves, int page, DynamicRegistryManager registryManager)
     {
         StringBuilder builder = new StringBuilder();
 
@@ -92,13 +93,20 @@ public class GravesCommandFormatter
 
         builder.append("\"\"]");
         //return new LiteralText(builder.toString());
-        return Text.Serialization.fromJson(builder.toString());
+        return Text.Serialization.fromJson(builder.toString(), registryManager);
     }
 
-    public static Text graveDistance(Grave grave, BlockPos reference)
+    public static Text graveDistance(Grave grave, BlockPos reference, DynamicRegistryManager registryManager)
     {
-        return Text.Serialization.fromJson("[\"\",\"Next grave \",{\"text\":\"[%s]\",\"underlined\":true,\"color\":\"aqua\",\"clickEvent\":{\"action\":\"run_command\",\"value\":\"/tp %d %d %d\"}}, \" at distance %.2f blocks\"]"
-                        .formatted(grave.position().toShortString(), grave.position().getX(), grave.position().getY(), grave.position().getZ(), Math.sqrt(grave.position().getSquaredDistance(reference))));
+        return Text.Serialization.fromJson(
+                "[\"\",\"Next grave \",{\"text\":\"[%s]\",\"underlined\":true,\"color\":\"aqua\",\"clickEvent\":{\"action\":\"run_command\",\"value\":\"/tp %d %d %d\"}}, \" at distance %.2f blocks\"]"
+                        .formatted(
+                                grave.position().toShortString(),
+                                grave.position().getX(), grave.position().getY(), grave.position().getZ(),
+                                Math.sqrt(grave.position().getSquaredDistance(reference))
+                        ),
+                registryManager
+        );
     }
 
     public static Text gravedListEntry(ServerPlayerEntity player, GraveManager.WorldBlockPosTuple pos)
@@ -106,8 +114,15 @@ public class GravesCommandFormatter
         if (pos == null)
             return Text.literal("- %s: §4no grave available.§r".formatted(player.getGameProfile().getName()));
         else
-            return Text.Serialization.fromJson("[\"- %s: \", {\"text\":\"[%d %d %d] (%s)\",\"underlined\":true,\"color\":\"aqua\",\"clickEvent\":{\"action\":\"run_command\",\"value\":\"/execute in %5$s run tp %2$d %3$d %4$d\"}}]"
-                    .formatted(player.getGameProfile().getName(), pos.position().getX(), pos.position().getY(), pos.position().getZ(), pos.server().getRegistryKey().getValue().toString()));
+            return Text.Serialization.fromJson(
+                    "[\"- %s: \", {\"text\":\"[%d %d %d] (%s)\",\"underlined\":true,\"color\":\"aqua\",\"clickEvent\":{\"action\":\"run_command\",\"value\":\"/execute in %5$s run tp %2$d %3$d %4$d\"}}]"
+                            .formatted(
+                                    player.getGameProfile().getName(),
+                                    pos.position().getX(), pos.position().getY(), pos.position().getZ(),
+                                    pos.server().getRegistryKey().getValue().toString()
+                            ),
+                    player.server.getRegistryManager()
+            );
     }
 
     public static Text gravedListHeader(Collection<ServerPlayerEntity> targets)
