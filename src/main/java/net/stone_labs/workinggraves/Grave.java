@@ -193,7 +193,10 @@ public record Grave(ServerWorld world, BlockPos position)
                 return;
 
             boolean hasVanishingCurse = itemStack.getEnchantments()
-                    .getEnchantments().contains(Enchantments.VANISHING_CURSE);
+                    .getEnchantments()
+                    .stream()
+                    .anyMatch((entry) -> entry.getIdAsString().equals(Enchantments.VANISHING_CURSE.getValue().toString()));
+
 
             if (hasVanishingCurse)
                 return;
