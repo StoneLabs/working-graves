@@ -6,6 +6,7 @@ import net.minecraft.block.entity.SignBlockEntity;
 import net.minecraft.block.entity.SignText;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
+import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LightningEntity;
@@ -192,9 +193,7 @@ public record Grave(ServerWorld world, BlockPos position)
                 return;
 
             boolean hasVanishingCurse = itemStack.getEnchantments()
-                    .getEnchantments()
-                    .stream()
-                    .anyMatch((entry) -> entry.getIdAsString().equals("minecraft:vanishing_curse"));
+                    .getEnchantments().contains(Enchantments.VANISHING_CURSE);
 
             if (hasVanishingCurse)
                 return;
